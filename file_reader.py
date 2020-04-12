@@ -6,16 +6,15 @@ import sys, os
 
 class OpenFileBtn(QPushButton):
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.clicked.connect(self.btn_click_slot)
-    #
-    # def btn_click_slot(self):
-    #     self.open_file(self)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.clicked.connect(self.open_file)
 
     # @staticmethod
     def open_file(self):
 
+        if not os.path.isdir("./temp"):
+            os.mkdir("./temp")
         if not os.path.isfile(default_path_file_path):
             default_path_file = open(default_path_file_path, "w", encoding="UTF - 8")
             default_path_str = "../"
