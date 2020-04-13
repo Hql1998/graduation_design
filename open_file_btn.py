@@ -4,10 +4,11 @@ import sys, os
 
 # #mid_size_widget, default_path_file_path# imports from ./global_variables.py
 
-class OpenFileBtn(QPushButton):
+class Open_File_Btn(QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.open_result = ("", "")
         self.clicked.connect(self.open_file)
 
     # @staticmethod
@@ -26,7 +27,7 @@ class OpenFileBtn(QPushButton):
 
         open_re = QFileDialog.getOpenFileName(self, "open a file", default_path_str,
                                               "csv(*.csv);;excel(*.xlsx);;tsv(*tsv)", "excel(*.xlsx)")
-        print(open_re)
+
         file_path = open_re[0]
         if len(file_path) > 0:
             dir_list = file_path.split("/")[0:-1]
@@ -35,9 +36,11 @@ class OpenFileBtn(QPushButton):
             default_path_file.truncate()
             default_path_file.write(default_path_str)
             default_path_file.close()
-            return open_re
+            self.open_result = open_re
+            return None
         else:
             # print(default_path_str)
             # default_path_file.write(default_path_str)
+            print(open_re)
             default_path_file.close()
-            return False
+            return None

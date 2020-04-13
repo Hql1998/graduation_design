@@ -6,5 +6,8 @@ from PyQt5.Qt import *
 import sys
 
 #Custom imports
-from file_reader import *
+import GUI_part.resouce_rc
+from open_file_btn import *
 from GUI_part.main_window_ui import Ui_MainWindow
+from function_widget import Function_Widget
+from file_reader_function_widget import File_Reader_Function_Widget

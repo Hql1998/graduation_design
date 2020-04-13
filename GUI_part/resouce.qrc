@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="draw_tab">
+    <file>draw_back_grid.png</file>
+  </qresource>
+</RCC>
