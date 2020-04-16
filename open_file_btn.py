@@ -6,6 +6,8 @@ import sys, os
 
 class Open_File_Btn(QPushButton):
 
+    file_path_changed = pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.open_result = ("", "")
@@ -26,7 +28,7 @@ class Open_File_Btn(QPushButton):
                 default_path_str = "../"
 
         open_re = QFileDialog.getOpenFileName(self, "open a file", default_path_str,
-                                              "csv(*.csv);;excel(*.xlsx);;tsv(*tsv)", "excel(*.xlsx)")
+                                              "csv(*.csv);;excel(*.xlsx);;tsv(*.tsv);;txt(*.txt)", "excel(*.xlsx)")
 
         file_path = open_re[0]
         if len(file_path) > 0:
@@ -36,11 +38,12 @@ class Open_File_Btn(QPushButton):
             default_path_file.truncate()
             default_path_file.write(default_path_str)
             default_path_file.close()
-            self.open_result = open_re
-            return None
+            if self.open_result[0] != open_re[0]:
+                self.open_result = open_re
+                self.file_path_changed.emit()
+
         else:
             # print(default_path_str)
             # default_path_file.write(default_path_str)
-            print(open_re)
             default_path_file.close()
-            return None
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1104</width>
-    <height>795</height>
+    <width>1110</width>
+    <height>810</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,14 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -40,12 +46,12 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>900</width>
-        <height>750</height>
+        <width>906</width>
+        <height>765</height>
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 170, 0);</string>
+       <string notr="true">background-color: rgb(240, 240, 240);</string>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -60,13 +66,13 @@
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="draw_scroll_area_content">
+          <widget class="Draw_Scroll_Area_Content" name="draw_scroll_area_content">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>874</width>
-             <height>705</height>
+             <width>880</width>
+             <height>720</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -95,8 +101,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>874</width>
-             <height>705</height>
+             <width>880</width>
+             <height>720</height>
             </rect>
            </property>
           </widget>
@@ -113,7 +119,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1104</width>
+     <width>1110</width>
      <height>23</height>
     </rect>
    </property>
@@ -147,7 +153,7 @@
    </property>
    <property name="styleSheet">
     <string notr="true">
-background-color: rgb(255, 255, 127);</string>
+background-color: rgb(200, 200, 200);</string>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -184,10 +190,10 @@ background-color: rgb(255, 255, 127);</string>
      <item>
       <widget class="QToolBox" name="toolBox">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 255, 0);</string>
+        <string notr="true">background-color: rgb(200, 200, 200);</string>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page">
         <property name="geometry">
@@ -195,7 +201,7 @@ background-color: rgb(255, 255, 127);</string>
           <x>0</x>
           <y>0</y>
           <width>200</width>
-          <height>676</height>
+          <height>691</height>
          </rect>
         </property>
         <attribute name="label">
@@ -213,7 +219,7 @@ background-color: rgb(255, 255, 127);</string>
           <x>0</x>
           <y>0</y>
           <width>200</width>
-          <height>676</height>
+          <height>691</height>
          </rect>
         </property>
         <attribute name="label">
@@ -231,11 +237,23 @@ background-color: rgb(255, 255, 127);</string>
    </widget>
   </widget>
   <action name="actionopen_file">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/main_window/add_new.png</normaloff>:/main_window/add_new.png</iconset>
+   </property>
    <property name="text">
     <string>open file</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Draw_Scroll_Area_Content</class>
+   <extends>QWidget</extends>
+   <header>draw_scroll_area_content</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resouce.qrc"/>
  </resources>

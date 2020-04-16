@@ -2,4 +2,9 @@
   <qresource prefix="draw_tab">
     <file>draw_back_grid.png</file>
   </qresource>
+  <qresource prefix="main_window">
+    <file>add_new.png</file>
+    <file>start.png</file>
+    <file>stop.png</file>
+  </qresource>
 </RCC>

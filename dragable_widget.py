@@ -47,7 +47,6 @@ class Grid_Move:
         widget.move(des_x, des_y)
 
 
-
 class Dragable_Widget(QFrame):
     moveFlag = False
 
