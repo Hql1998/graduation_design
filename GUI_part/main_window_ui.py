@@ -33,6 +33,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.draw_tab)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.draw_scroll_area = QtWidgets.QScrollArea(self.draw_tab)
+        self.draw_scroll_area.setStyleSheet("")
         self.draw_scroll_area.setWidgetResizable(True)
         self.draw_scroll_area.setObjectName("draw_scroll_area")
         self.draw_scroll_area_content = Draw_Scroll_Area_Content()

@@ -28,7 +28,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.addToolBar(self.tool_bar)
 
         # self.draw_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.fw = File_Reader_Function_Widget(self.draw_scroll_area)
+        self.fw = File_Reader_Function_Widget(self.draw_scroll_area_content)
         self.fw.icon_btn.setText("file reader")
 
         # self.fw1 = Function_Widget(self.draw_scroll_area)

@@ -8,7 +8,7 @@ class File_Reader_Function_Widget(Function_Widget):
         self.class_name = "file_reader"
         self.connected_dialog = None
         self.first_click = True
-        self.setObjectName("file_reader_"+ str(len(self.parent().parent().parent().parent().parent().parent().activeWidget["file_reader"])))
+        # self.setObjectName("file_reader_"+ str(len(self.parent().parent().parent().parent().parent().parent().activeWidget["file_reader"])))
         print("file_reader object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
 

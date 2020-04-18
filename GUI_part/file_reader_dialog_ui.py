@@ -14,6 +14,7 @@ class Ui_file_reader_dialog(object):
     def setupUi(self, file_reader_dialog):
         file_reader_dialog.setObjectName("file_reader_dialog")
         file_reader_dialog.resize(518, 753)
+        file_reader_dialog.setStyleSheet("background: None;")
         self.verticalLayout = QtWidgets.QVBoxLayout(file_reader_dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)

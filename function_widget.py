@@ -1,75 +1,8 @@
-from PyQt5.Qt import *
 from dragable_widget import Dragable_Widget
-
-
-class MyIconBtn(QPushButton):
-    double_clicked = pyqtSignal()
-
-    def __init__(self,parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.setCheckable(True)
-        # self.setChecked(True)
-        self.setObjectName("iconbtn")
-
-    def mousePressEvent(self, e):
-        # super().mousePressEvent(e)
-        e.ignore()
-
-    def mouseMoveEvent(self, e):
-        super().mouseMoveEvent(e)
-        e.ignore()
-
-    def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
-        e.ignore()
-
-    def mouseDoubleClickEvent(self, e):
-        self.double_clicked.emit()
-
-
-
-
-class Lights_Change:
-    @staticmethod
-    def unprepared(light_label):
-        light_label.setStyleSheet("""
-        border-radius:9px;
-        background-color: gray;
-        """)
-        light_label.status = "unprepared"
-    @staticmethod
-    def start(light_label):
-        light_label.setStyleSheet("""
-        border-radius:9px;
-        background-color: rgb(85,217,132);
-        """)
-        light_label.status = "start"
-    @staticmethod
-    def processing(light_label):
-        light_label.setStyleSheet("""
-        border-radius:9px;
-        background-color: yellow;
-        """)
-        light_label.status = "processing"
-    @staticmethod
-    def finish(light_label):
-        light_label.setStyleSheet("""
-        border-radius:9px;
-        background-color: red;
-        """)
-        light_label.status = "finish"
-
-
-class Light_Label(QLabel):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.status = "unprepared"
-        self.setup_ui()
-
-    def setup_ui(self):
-        self.setFixedSize(18,18)
-        self.setText("")
-        Lights_Change.unprepared(self)
+from MyIconBtn import MyIconBtn
+from MyLeftBtn import MyLeftBtn
+from MyRightBtn import MyRightBtn
+from light_label import *
 
 
 
@@ -87,13 +20,12 @@ class Function_Widget(Dragable_Widget):
         self.setupUi()
 
     def setupUi(self):
-
         self.setStyleSheet("""
         Dragable_Widget {
         border:1px solid gray;
         border-radius: 10px;
-        background-color: rgba(255,255,255,0);
-        background-image:None;
+        background: rgba(255,255,255,0);
+
         }
         Dragable_Widget:hover{
         border-color:white;
@@ -103,7 +35,15 @@ class Function_Widget(Dragable_Widget):
         }
         MyIconBtn{
         border:None;
-        background-color:orange;
+        background: orange;
+        }
+        MyRightBtn{
+        border:None;
+        background: red
+        }
+        MyLeftBtn{
+        border:None;
+        background:orange;
         }
         """)
         self.setFixedSize(QSize(100, 100))
@@ -112,7 +52,7 @@ class Function_Widget(Dragable_Widget):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
 
-        self.left_btn = QPushButton(self)
+        self.left_btn = MyLeftBtn(self)
         self.left_btn.setFixedSize(self.left_btn_size)
         self.left_btn.setFlat(True)
         self.left_btn.setObjectName("left_btn")
@@ -138,7 +78,7 @@ class Function_Widget(Dragable_Widget):
 
         self.horizontalLayout.addLayout(self.mid_vertical_layout)
 
-        self.right_btn = QPushButton(self)
+        self.right_btn = MyRightBtn(self)
         self.right_btn.setFixedSize(self.right_btn_size)
         self.right_btn.setFlat(True)
         self.right_btn.setObjectName("right_btn")
@@ -153,10 +93,10 @@ class Function_Widget(Dragable_Widget):
         self.close_btn.setStyleSheet("""
         QPushButton {
         border-radius:10px;
-        background-color: rgba(255,0,0,50);
+        background: rgba(255,0,0,50);
         color:white;}
         QPushButton:hover {
-        background-color: rgba(255,0,0,220);}
+        background: rgba(255,0,0,220);}
         """)
 
         self.verticalLayout = QVBoxLayout()
@@ -178,6 +118,8 @@ class Function_Widget(Dragable_Widget):
         return None
 
     def close_btn_handler(self):
+        if self.right_btn.curve is not None:
+            self.right_btn.curve.deleteLater()
         self.deleteLater()
 
     def state_changed_handler(self, state):
@@ -190,3 +132,14 @@ class Function_Widget(Dragable_Widget):
         elif state == "finish":
             Lights_Change.finish(self.light_label)
 
+    def paintEvent(self, event):
+        super(Dragable_Widget, self).paintEvent(event)
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        s = self.style()
+        s.drawPrimitive(QStyle.PE_Widget, opt, p, self)
+
+    def moveEvent(self, me):
+        if self.right_btn.curve is not None:
+            self.right_btn.curve.move(me.pos()+QPoint(8/10*self.width(), 1/2*self.height()-10))

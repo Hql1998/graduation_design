@@ -63,6 +63,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QScrollArea" name="draw_scroll_area">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -238,7 +241,7 @@ background-color: rgb(200, 200, 200);</string>
   </widget>
   <action name="actionopen_file">
    <property name="icon">
-    <iconset>
+    <iconset resource="resouce.qrc">
      <normaloff>:/main_window/add_new.png</normaloff>:/main_window/add_new.png</iconset>
    </property>
    <property name="text">
