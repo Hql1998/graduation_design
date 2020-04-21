@@ -16,10 +16,11 @@ class MyRightBtn(QPushButton):
         if self.curve is None:
             start_point = self.get_mid_pos()
             self.curve = Curve(self.parentWidget().parentWidget())
+            self.curve.function_widget = self.parentWidget()
             self.curve.move(start_point)
         else:
             self.curve.end_label.raise_()
 
     def get_mid_pos(self):
-         return self.parentWidget().pos() + QPoint(4 / 5 * self.parentWidget().width(),
+         return self.parentWidget().mapToGlobal(QPoint(0,0)) + QPoint(4 / 5 * self.parentWidget().width(),
                                            1 / 2 * self.parentWidget().height() - 10)

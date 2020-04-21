@@ -19,14 +19,10 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
     def open_file_btn_clicked(self):
         if self.open_file_btn.open_result[0] != "":
             self.parentWidget().state_changed_handler("start")
-
             self.display_file_name_label.setText(self.open_file_btn.open_result[0].split("/")[-1])
             self.display_file_name_label.adjustSize()
             self.display_table()
             self.display_table_describe()
-
-
-
 
 
     def display_table(self):
@@ -60,7 +56,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
         data_type = pd.DataFrame(self.dataFrame.dtypes).transpose()
         data_describe = self.dataFrame.describe()
-        data_describe = pd.concat([data_type,data_describe]).replace(nan, "N/A")
+        data_describe = pd.concat([data_type, data_describe]).replace(nan, "N/A")
         index = [str(i) for i in data_describe.index]
         index[0] = "data type"
 

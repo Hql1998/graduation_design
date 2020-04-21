@@ -44,7 +44,7 @@ class Grid_Motion:
         widget.move(des_x, des_y)
 
     @staticmethod
-    def grid_size(size):
-        width = min(880, size.width() // Grid_Motion.grid_width * Grid_Motion.grid_width)
-        height = min(720, size.height() // Grid_Motion.grid_width * Grid_Motion.grid_width)
-        return QSize(width, height)
+    def grid_size(width, height):
+        width = min(880, width // Grid_Motion.grid_width * Grid_Motion.grid_width)
+        height = min(720, height // Grid_Motion.grid_width * Grid_Motion.grid_width)
+        return [width, height]

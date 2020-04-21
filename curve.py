@@ -1,38 +1,6 @@
 from PyQt5.Qt import *
+from curve_label import *
 from grid_motion import Grid_Motion
-
-class Start_Label(QLabel):
-    def __init__(self,parent = None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.setup_ui()
-
-    def setup_ui(self):
-        self.resize(20, 20)
-        self.setPixmap(QPixmap(":/main_window/right_arrow.png").scaled(20, 20))
-        self.setStyleSheet("background:None;")
-
-class End_Label(QLabel):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.setup_ui()
-
-    def setup_ui(self):
-        self.resize(20, 20)
-        self.setPixmap(QPixmap(":/main_window/right_arrow.png").scaled(20, 20))
-        self.setStyleSheet("background:None;")
-
-    def mousePressEvent(self, me):
-        self.mouse_start = self.parentWidget().start_label.mapToGlobal(QPoint(0,0))
-
-    def mouseMoveEvent(self, me):
-        size = QSize(me.screenPos().x() - self.mouse_start.x() + 20, me.screenPos().y() - self.mouse_start.y() + 20)
-        size = Grid_Motion.grid_size(size)
-        self.parentWidget().resize(size)
-
-    def mouseReleaseEvent(self, me):
-        pass
-
-
 
 class Curve(QWidget):
 
@@ -40,13 +8,13 @@ class Curve(QWidget):
         super().__init__(parent, *args, **kwargs)
         self.start_point = QPointF(10, 10)
         self.end_point = QPointF(self.width(), self.height())
-        self.negative = False
+        self.function_widget = None
         self.setup_ui()
         self.show()
 
     def setup_ui(self):
         self.resize(20, 20)
-        self.setMinimumSize(20, 20)
+        # self.setMinimumSize(20, 20)
         self.setStyleSheet("""
         Curve{
         border: 1px solid rgba(255,255,0,255);
@@ -60,8 +28,8 @@ class Curve(QWidget):
         self.start_label = Start_Label(self)
         self.end_label = End_Label(self)
         self.end_label.move(self.width()-20, self.height()-20)
+        self.end_label.moved.connect(self.end_label_moved_handler)
         self.end_label.raise_()
-
 
     def paintEvent(self, event):
 
@@ -88,9 +56,35 @@ class Curve(QWidget):
         painter.drawPath(cubicPath)
         painter.end()
 
+    def mousePressEvent(self, e):
+        if self.function_widget is not None:
+            self.function_widget.raise_()
+
     def resizeEvent(self, re):
-        self.end_point = QPointF(re.size().width()-10, re.size().height()-10)
-        self.end_label.move(re.size().width() - 20, re.size().height() - 20)
+
+        # self.start_point = self.mapFromParent(self.function_widget.right_btn.get_mid_pos())
+        self.start_point = self.mapFromGlobal(self.function_widget.right_btn.get_mid_pos())
+        self.start_point = QPoint(self.start_point.x()+10, self.start_point.y()+10)
+        self.end_point = QPoint((self.width() - self.start_point.x()), abs(self.height() - self.start_point.y()))
+        self.start_label.move(self.start_point.x()-10,self.start_point.y()-10)
+
+    def moveEvent(self, e):
+        self.old_pos = self.function_widget.right_btn.get_mid_pos()
+
+    def end_label_moved_handler(self, x, y):
+
+        x = x - self.old_pos.x()
+        y = y - self.old_pos.y()
+        x, y = Grid_Motion.grid_size(x, y)
+        old_point_from_draw_area = self.parentWidget().mapFromGlobal(self.old_pos)
+
+        if y <= 0:
+            old_point_from_draw_area.setY(old_point_from_draw_area.y() + 20)
+            y = y - 40
+
+        rect = QRect(old_point_from_draw_area, QSize(x, y)).normalized()
+        self.setGeometry(rect)
+        self.end_label.move(self.end_point.x()-10, self.end_point.y()-10)
 
 
 

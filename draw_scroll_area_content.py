@@ -36,7 +36,7 @@ class Draw_Scroll_Area_Content(QScrollArea):
         self.rb.setVisible(False)
 
     def get_function_widget(self):
-        self.function_widget_set = self.parent().findChildren(Function_Widget)
+        self.function_widget_set = self.findChildren(Function_Widget)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

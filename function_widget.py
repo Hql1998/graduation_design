@@ -15,7 +15,8 @@ class Function_Widget(Dragable_Widget):
         self.right_btn_size = QSize(20, 60)
 
         self.class_name = "function_widget"
-        self.next_widget = ""
+        self.next_widget = None
+        self.previous_widget = None
 
         self.setupUi()
 
@@ -118,9 +119,16 @@ class Function_Widget(Dragable_Widget):
         return None
 
     def close_btn_handler(self):
-        if self.right_btn.curve is not None:
-            self.right_btn.curve.deleteLater()
+
+        self.right_btn.curve.deleteLater()
+        if self.previous_widget is not None:
+            self.previous_widget.right_btn.curve.end_label_moved_handler(self.previous_widget.right_btn.get_mid_pos().x()+20,
+                                                                         self.previous_widget.right_btn.get_mid_pos().y()+20)
+            self.previous_widget.next_widget = None
+        if self.next_widget is not None:
+            self.next_widget.previous_widget = None
         self.deleteLater()
+
 
     def state_changed_handler(self, state):
         if state == "unprepared":
@@ -141,5 +149,13 @@ class Function_Widget(Dragable_Widget):
         s.drawPrimitive(QStyle.PE_Widget, opt, p, self)
 
     def moveEvent(self, me):
+        point = self.get_left_sucket()
         if self.right_btn.curve is not None:
             self.right_btn.curve.move(me.pos()+QPoint(8/10*self.width(), 1/2*self.height()-10))
+        if self.previous_widget is not None:
+            self.previous_widget.right_btn.curve.end_label_moved_handler(point.x()+20, point.y()+20)
+        if self.next_widget is not None:
+            self.right_btn.curve.end_label_moved_handler(self.next_widget.get_left_sucket().x() +20, self.next_widget.get_left_sucket().y()+20)
+
+    def get_left_sucket(self):
+        return self.mapToGlobal(QPoint(0,0))+QPoint(0*self.width(), 1/2*self.height() - 10)

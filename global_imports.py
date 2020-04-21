@@ -11,3 +11,4 @@ from open_file_btn import *
 from GUI_part.main_window_ui import Ui_MainWindow
 from function_widget import *
 from file_reader_function_widget import File_Reader_Function_Widget
+from data_preprocessing_function_widget import Data_Preprocessing_Function_Widget

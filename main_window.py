@@ -31,11 +31,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.fw = File_Reader_Function_Widget(self.draw_scroll_area_content)
         self.fw.icon_btn.setText("file reader")
 
-        # self.fw1 = Function_Widget(self.draw_scroll_area)
-        # self.fw1.icon_btn.setText("icon2")
-        #
-        # self.fw2 = Function_Widget(self.draw_scroll_area)
-        # self.fw2.icon_btn.setText("icon3")
+        self.fw1 = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
+        self.fw1.icon_btn.setText("Data_Preproce")
+
+        self.fw2 = Function_Widget(self.draw_scroll_area_content)
+        self.fw2.icon_btn.setText("icon3")
 
         self.status_bar.showMessage("success to load on the mainwindow", 5000)
 

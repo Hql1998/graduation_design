@@ -14,6 +14,7 @@ class Dragable_Widget(QFrame):
             self.mou_init_x = e.globalX()
             self.mou_init_y = e.globalY()
 
+
             self.mouse_x_dynamic = e.globalX()
             self.mouse_y_dynamic = e.globalY()
 
