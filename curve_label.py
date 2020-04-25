@@ -34,7 +34,7 @@ class End_Label(QLabel):
 
         distance = me.globalPos()
         vec_x = int(distance.x())
-        vec_y = int(distance.y())
+        vec_y = int(distance.y()) + 20
 
         self.moved.emit(vec_x, vec_y)
 
@@ -42,12 +42,13 @@ class End_Label(QLabel):
         self.draw_area_content.get_function_widget()
         self.not_find = True
         for function_widget in self.draw_area_content.function_widget_set:
-            if function_widget is not self.parentWidget().function_widget:
+            if function_widget is not self.parentWidget().function_widget and function_widget.class_name in self.parentWidget().function_widget.allowed_next_fun_widget_list:
                 if function_widget.geometry().contains(self.draw_area_content.mapFromGlobal(me.globalPos())):
                     self.not_find = False
                     left_sucket_point = function_widget.get_left_sucket()
-                    function_widget.previous_widget = self.parentWidget().function_widget
-                    self.parentWidget().function_widget.next_widget = function_widget
+                    function_widget.previous_widgets.append(self.parentWidget().function_widget)
+                    function_widget.update_data_from_previous()
+                    self.parentWidget().function_widget.next_widgets.append(function_widget)
                     self.parentWidget().end_label_moved_handler(left_sucket_point.x() +20, left_sucket_point.y() +20)
 
         if self.not_find:
@@ -58,8 +59,9 @@ class End_Label(QLabel):
             self.parentWidget().resize(20, 20)
 
             if self.parentWidget().function_widget is not None:
-                if self.parentWidget().function_widget.next_widget is not None:
-                    self.parentWidget().function_widget.next_widget.previous_widget = None
-                    self.parentWidget().function_widget.next_widget = None
+                if self.parentWidget().function_widget.next_widgets != []:
+                    for next_widget in self.parentWidget().function_widget.next_widgets:
+                        next_widget.previous_widgets = []
+                    self.parentWidget().function_widget.next_widgets = []
 
         self.raise_()

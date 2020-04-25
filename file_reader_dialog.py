@@ -13,6 +13,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         self.setupUi(self)
         # self.open_file_btn.click()
         self.setObjectName("file_reader_dialog")
+        self.dataFrame = None
         self.destroyed.connect(lambda: print("File_Reader_Dialog were destroyed"))
 
 
@@ -29,14 +30,13 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
         self.parentWidget().state_changed_handler("processing")
         if self.open_file_btn.open_result[1] == "excel(*.xlsx)":
-            self.dataFrame = pd.read_excel(self.open_file_btn.open_result[0])
+            self.parent().dataFrame = pd.read_excel(self.open_file_btn.open_result[0])
         elif self.open_file_btn.open_result[1] == "csv(*.csv)":
-            self.dataFrame = pd.read_csv(self.open_file_btn.open_result[0])
+            self.parent().dataFrame = pd.read_csv(self.open_file_btn.open_result[0])
         elif self.open_file_btn.open_result[1] == "tsv(*.tsv)":
-            self.dataFrame = pd.read_csv(self.open_file_btn.open_result[0], sep="\t")
+            self.parent().dataFrame = pd.read_csv(self.open_file_btn.open_result[0], sep="\t")
 
-
-        data = self.dataFrame.replace(nan, 'N/A')
+        data = self.parent().dataFrame.replace(nan, 'N/A')
         header_data = data.columns.to_list()
 
         self.tableWidget.setRowCount(data.shape[0])
@@ -54,8 +54,8 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
     def display_table_describe(self):
 
-        data_type = pd.DataFrame(self.dataFrame.dtypes).transpose()
-        data_describe = self.dataFrame.describe()
+        data_type = pd.DataFrame(self.parent().dataFrame.dtypes).transpose()
+        data_describe = self.parent().dataFrame.describe()
         data_describe = pd.concat([data_type, data_describe]).replace(nan, "N/A")
         index = [str(i) for i in data_describe.index]
         index[0] = "data type"
@@ -63,8 +63,6 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         self.tableWidget_describe.setRowCount(data_describe.shape[0])
         self.tableWidget_describe.setColumnCount(data_describe.shape[1])
         self.tableWidget_describe.setVerticalHeaderLabels(index)
-        # self.tableWidget_describe.verticalHeader().setDefaultSectionSize(30)
-        # self.tableWidget_describe.verticalHeader().setResizeContentsPrecision(100)
 
         for i in range(data_describe.shape[0]):
             for j in range(data_describe.shape[1]):
@@ -77,16 +75,17 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
         self.parentWidget().state_changed_handler("finish")
 
-
-
     def accept(self):
         print("accept")
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
+            self.parent().next_widgets[0].update_data_from_previous()
         self.hide()
 
     def reject(self):
         print("reject")
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
+            self.parent().next_widgets[0].update_data_from_previous()
         self.hide()
-
 
 
 

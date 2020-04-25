@@ -5,15 +5,18 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent=None, *args, **kwargs)
         self.setAttribute(Qt.WA_StyledBackground, True)
+        qApp.main_window = self
 
         # status management
         self.status_initiate()
+        self.destroyed.connect(self.pickle_dump)
 
         # load UI resources
         self.setupUi(self)
         self.status_bar = self.statusBar()
         self.tool_bar = QToolBar(self)
         self.setup_ui_subtle()
+
 
     def setup_ui_subtle(self):
 
@@ -34,17 +37,26 @@ class Window(QMainWindow, Ui_MainWindow):
         self.fw1 = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
         self.fw1.icon_btn.setText("Data_Preproce")
 
-        self.fw2 = Function_Widget(self.draw_scroll_area_content)
-        self.fw2.icon_btn.setText("icon3")
+        self.fw2 = Deal_With_Empty_Value_Function_Widget(self.draw_scroll_area_content)
+        self.fw2.icon_btn.setText("Empty")
 
         self.status_bar.showMessage("success to load on the mainwindow", 5000)
 
     def status_initiate(self):
-        if False:
-            "判断文件里面有没有数据，如果有就加载"
+        if os.path.isfile('./temp/p.txt'):
+        # "判断文件里面有没有数据，如果有就加载"
+            f = open('./temp/p.txt', 'r')
+            pickle.load(f).show()
+            f.close()
         else:
             self.activeWidget = {"file_reader": [], "data_preprocessing": [], "feature_preprocessing": [],
                              "data_analysis": []}
+
+    def pickle_dump(self):
+        print("main_window destroyed")
+        f = open('./temp/p.txt', 'w')
+        pickle.dump(self, f)
+        f.close()
 
 
 if __name__ == "__main__":

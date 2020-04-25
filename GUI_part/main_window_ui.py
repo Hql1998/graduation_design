@@ -20,9 +20,9 @@ class Ui_MainWindow(object):
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setEnabled(True)
         self.tabWidget.setMinimumSize(QtCore.QSize(906, 765))
@@ -54,10 +54,15 @@ class Ui_MainWindow(object):
         self.log_scroll_area_content = QtWidgets.QWidget()
         self.log_scroll_area_content.setGeometry(QtCore.QRect(0, 0, 880, 720))
         self.log_scroll_area_content.setObjectName("log_scroll_area_content")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.log_scroll_area_content)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.log_te = QtWidgets.QTextEdit(self.log_scroll_area_content)
+        self.log_te.setObjectName("log_te")
+        self.verticalLayout_3.addWidget(self.log_te)
         self.log_scroll_tab.setWidget(self.log_scroll_area_content)
         self.horizontalLayout_5.addWidget(self.log_scroll_tab)
         self.tabWidget.addTab(self.log_tab, "")
-        self.horizontalLayout.addWidget(self.tabWidget)
+        self.verticalLayout_2.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1110, 23))
@@ -127,6 +132,12 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.draw_tab), _translate("MainWindow", "Experiment Area"))
+        self.log_te.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:16pt; font-weight:600;\">Log Record:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:16pt; font-weight:600;\"><br /></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.log_tab), _translate("MainWindow", "Logs"))
         self.menu.setTitle(_translate("MainWindow", "files"))
         self.menuedit.setTitle(_translate("MainWindow", "edit"))

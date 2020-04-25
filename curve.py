@@ -62,13 +62,13 @@ class Curve(QWidget):
 
     def resizeEvent(self, re):
 
-        # self.start_point = self.mapFromParent(self.function_widget.right_btn.get_mid_pos())
         self.start_point = self.mapFromGlobal(self.function_widget.right_btn.get_mid_pos())
         self.start_point = QPoint(self.start_point.x()+10, self.start_point.y()+10)
         self.end_point = QPoint((self.width() - self.start_point.x()), abs(self.height() - self.start_point.y()))
         self.start_label.move(self.start_point.x()-10,self.start_point.y()-10)
 
     def moveEvent(self, e):
+
         self.old_pos = self.function_widget.right_btn.get_mid_pos()
 
     def end_label_moved_handler(self, x, y):
@@ -85,8 +85,6 @@ class Curve(QWidget):
         rect = QRect(old_point_from_draw_area, QSize(x, y)).normalized()
         self.setGeometry(rect)
         self.end_label.move(self.end_point.x()-10, self.end_point.y()-10)
-
-
 
 
 if __name__ == "__main__":

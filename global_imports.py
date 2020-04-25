@@ -12,3 +12,5 @@ from GUI_part.main_window_ui import Ui_MainWindow
 from function_widget import *
 from file_reader_function_widget import File_Reader_Function_Widget
 from data_preprocessing_function_widget import Data_Preprocessing_Function_Widget
+from deal_with_empty_value_function_widget import Deal_With_Empty_Value_Function_Widget
+import pickle
