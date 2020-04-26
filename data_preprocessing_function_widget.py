@@ -1,6 +1,7 @@
 from PyQt5.Qt import *
 from data_preprocessing_dialog import Data_Preprocessing_Dialog
 from function_widget import Function_Widget
+import copy
 
 class Data_Preprocessing_Function_Widget(Function_Widget):
 
@@ -10,15 +11,15 @@ class Data_Preprocessing_Function_Widget(Function_Widget):
         self.connected_dialog = None
         self.first_click = True
         self.allowed_next_fun_widget_list = []
-        self.dataFrame = None
+        self.data = None
         print("data_preprocssing object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
-        self.destroyed.connect(lambda obj: qApp.main_window.log_te.append("\n" + str(obj) + "Function_Widget deleted"))
+        self.destroyed.connect(lambda obj: qApp.main_window.log_te.append("\n" + str(obj) + "data preprocessing Function_Widget deleted"))
 
 
     def icon_btn_double_clicked_handler(self):
 
-        if self.previous_widgets != [] and self.dataFrame is not None:
+        if self.previous_widgets != [] and self.data is not None:
             if self.first_click:
                 self.connected_dialog = Data_Preprocessing_Dialog(self)
                 self.connected_dialog.open()
@@ -29,11 +30,16 @@ class Data_Preprocessing_Function_Widget(Function_Widget):
 
         print("data_preprocessing", self.next_widgets, self.previous_widgets)
 
-
     def update_data_from_previous(self):
-        if self.previous_widgets != [] and self.previous_widgets[0].dataFrame is not None:
-            if self.previous_widgets[0].dataFrame is not self.dataFrame:
-                self.dataFrame = self.previous_widgets[0].dataFrame
+        if self.previous_widgets != [] and self.previous_widgets[0].data is not None:
+            if self.data is None:
+                self.data = copy.deepcopy(self.previous_widgets[0].data)
+                if self.connected_dialog is not None:
+                    self.connected_dialog.update_data()
+            else:
+                print("previous",self.previous_widgets[0].data["train_x"].shape, "data prepro",self.data["train_x"].shape)
+                self.data = copy.deepcopy(self.previous_widgets[0].data)
+                self.connected_dialog.data = self.data
                 if self.connected_dialog is not None:
                     self.connected_dialog.update_data()
 

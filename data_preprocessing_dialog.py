@@ -4,42 +4,31 @@ from function_widget import *
 import pandas as pd
 from numpy import nan
 from sklearn.preprocessing import OneHotEncoder,OrdinalEncoder,StandardScaler,MinMaxScaler,RobustScaler
-from sklearn.impute import SimpleImputer
 
 
 class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.setWindowModality(Qt.NonModal)
-        # self.dataFrame = pd.read_csv("./temp/balanced_diabetes_dataset.csv")
+        self.data = self.parentWidget().data
         # self.setModal(False)
         self.setupUi(self)
         self.update_data()
 
-    def update_target_comb(self, target_index = -1):
-        # header_data = self.dataFrame.columns.to_list()
-        header_data = self.parent().dataFrame.columns.to_list()
-        self.target_index_comb.blockSignals(True)
-        self.target_index_comb.clear()
-        self.target_index_comb.addItems(header_data)
-        if target_index == -1:
-            self.target_index_comb.setCurrentIndex(len(header_data) - 1)
-        else:
-            self.target_index_comb.setCurrentIndex(target_index)
-        self.target_index_comb.blockSignals(False)
 
     def update_data(self):
 
-        self.update_target_comb(target_index=self.parentWidget().dataFrame.shape[1] - 1)
-        data = self.parent().dataFrame.replace(nan, 'N/A')
-        # data = self.dataFrame.replace(nan, 'N/A')
+        if self.data["train_y"] is not None:
+            data = self.data["train_x"].merge(self.data["train_y"], left_index=True, right_index=True).replace(nan, 'N/A')
+        else:
+            data = self.data["train_x"].replace(nan, 'N/A')
+
+        if data.shape[0] * data.shape[1] > 10000:
+            data = data.head(30)
         header_data = data.columns.to_list()
+        header_data[-1] = header_data[-1] + "(target)"
         for index, value in enumerate(header_data):
             header_data[index] = str(index) + "\n" + header_data[index]
-
-        if self.set_target_cb.checkState():
-            target_index = self.target_index_comb.currentIndex()
-            header_data[target_index] = header_data[target_index] + " (target)"
 
         self.tableWidget.setRowCount(data.shape[0])
         self.tableWidget.setColumnCount(data.shape[1])
@@ -51,7 +40,7 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 if data.iloc[i, j] == 'N/A':
                     item.setBackground(QColor("red"))
-                if self.set_target_cb.checkState() and j == target_index:
+                if j == data.shape[1] - 1:
                     item.setBackground(QColor("orange"))
                 self.tableWidget.setItem(i, j, item)
 
@@ -63,28 +52,28 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
 
     def apply_handler(self):
         print("apply clicked")
-        data = self.parentWidget().dataFrame
-
-        target_index = self.target_index_comb.currentIndex()
-        if self.set_target_cb.checkState():
-            data_y = data.iloc[:, target_index]
-            data_x = data.drop(columns=data.columns[target_index])
-            data = data_x
+        train_x = self.data["train_x"]
+        test_x = self.data["test_x"]
 
         # 处理等级编码
         ordinal_index_text = self.ordinal_index_le.text()
         ordinal_index_list = []
-        ordinal_data = None
+        train_ordinal_data = None
+        test_ordinal_data = None
         if self.trans_into_ordinal_cb.checkState() and len(ordinal_index_text) > 0:
             try:
                 for i in ordinal_index_text.split(","):
                     i = i.strip()
                     ordinal_index_list.append(int(i))
-                ordinal_data = data.iloc[:, ordinal_index_list]
+                train_ordinal_data = train_x.iloc[:, ordinal_index_list]
                 ordinal_encoder = OrdinalEncoder()
-                ordinal_data_numpy = ordinal_encoder.fit_transform(ordinal_data.to_numpy())
-                ordinal_data = pd.DataFrame(ordinal_data_numpy, index=ordinal_data.index, columns=ordinal_data.columns)
-
+                train_ordinal_data_numpy = ordinal_encoder.fit_transform(train_ordinal_data.to_numpy())
+                train_ordinal_data = pd.DataFrame(train_ordinal_data_numpy, index=train_ordinal_data.index, columns=train_ordinal_data.columns)
+                if test_x is not None:
+                    test_ordinal_data = test_x.iloc[:, ordinal_index_list]
+                    test_ordinal_data_numpy = ordinal_encoder.transform(test_ordinal_data.to_numpy())
+                    test_ordinal_data = pd.DataFrame(test_ordinal_data_numpy, index=test_ordinal_data.index,
+                                                      columns=test_ordinal_data.columns)
             except:
                 print("invalid input")
                 QErrorMessage.qtHandler()
@@ -93,24 +82,40 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
         # 处理onehot编码
         onehot_index_text = self.onehot_index_le.text()
         onehot_index_list = []
-        onehot_data = None
+        train_onehot_data = None
+        test_onehot_data = None
         if self.trans_into_onehot_cb.checkState() and len(onehot_index_text) > 0:
             try:
                 for i in onehot_index_text.split(","):
                     i = i.strip()
                     onehot_index_list.append(int(i))
-                onehot_data = data.iloc[:, onehot_index_list]
+                train_onehot_data = train_x.iloc[:, onehot_index_list]
                 onehot_encoder = OneHotEncoder(sparse=False)
-                onehot_data_numpy = onehot_encoder.fit_transform(onehot_data.to_numpy())
+                train_onehot_data_numpy = onehot_encoder.fit_transform(train_onehot_data.to_numpy())
                 onehot_columns = []
-                for i, v in enumerate(onehot_data.columns):
+                for i, v in enumerate(train_onehot_data.columns):
                     for j in onehot_encoder.categories_[i]:
                         onehot_columns.append(v + "_" + str(j))
-                onehot_data = pd.DataFrame(onehot_data_numpy, index=onehot_data.index, columns=onehot_columns)
+                train_onehot_data = pd.DataFrame(train_onehot_data_numpy, index=train_onehot_data.index, columns=onehot_columns)
+
+                if test_x is not None:
+                    test_onehot_data = test_x.iloc[:, onehot_index_list]
+                    test_onehot_data_numpy = onehot_encoder.transform(test_onehot_data.to_numpy())
+                    test_onehot_data = pd.DataFrame(test_onehot_data_numpy, index=test_onehot_data.index,
+                                                     columns=onehot_columns)
+
             except KeyError as e:
                 print("invalid input")
                 QErrorMessage.qtHandler()
                 qErrnoWarning("invalid input at onehot 编码" + str(e))
+
+        if len(ordinal_index_list + onehot_index_list) > 0:
+            index_list = ordinal_index_list + onehot_index_list
+            labels = train_x.columns[index_list]
+            train_x = train_x.drop(columns=labels)
+            if test_x is not None:
+                test_x = test_x.drop(columns=labels)
+
 
         # 处理drop_index
         drop_index_text = self.drop_index_le.text()
@@ -120,44 +125,74 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
                 for i in drop_index_text.split(","):
                     i = i.strip()
                     index_list.append(int(i))
-                index_list = index_list + ordinal_index_list + onehot_index_list
-                labels = data.columns[index_list]
-                data = data.drop(columns=labels)
+                labels = train_x.columns[index_list]
+                train_x = train_x.drop(columns=labels)
+                if test_x is not None:
+                    test_x = test_x.drop(columns=labels)
             except:
                 QErrorMessage.qtHandler()
                 qErrnoWarning("invalid input at drop feature by index line edit")
-                return None
-        if ordinal_data is not None:
-            data = data.merge(ordinal_data, left_index=True, right_index=True)
-        if onehot_data is not None:
-            data = data.merge(onehot_data, left_index=True, right_index=True)
+
+
+        if train_ordinal_data is not None:
+            train_x = train_x.merge(train_ordinal_data, left_index=True, right_index=True)
+        if train_onehot_data is not None:
+            train_x = train_x.merge(train_onehot_data, left_index=True, right_index=True)
+        if test_x is not None:
+            if test_ordinal_data is not None:
+                test_x = test_x.merge(test_ordinal_data, left_index=True, right_index=True)
+            if test_onehot_data is not None:
+                test_x = test_x.merge(test_onehot_data, left_index=True, right_index=True)
 
         if self.scaled_cb.checkState():
             scale_way = self.scale_by_comb.currentText()
-            if scale_way == "RobustScaler":
-                data_scaled = RobustScaler().fit_transform(data.to_numpy())
-            elif scale_way == "MinMaxScaler":
-                data_scaled = MinMaxScaler().fit_transform(data.to_numpy())
-            elif scale_way == "StandardScaler":
-                data_scaled = StandardScaler().fit_transform(data.to_numpy())
-            data = pd.DataFrame(data_scaled, index=data.index, columns=data.columns)
-            print(scale_way)
 
-        data = data.merge(data_y, left_index=True, right_index=True)
-        self.parentWidget().dataFrame = data
+            if scale_way == "RobustScaler":
+                RS = RobustScaler()
+                train_x_scaled = RS.fit_transform(train_x.to_numpy())
+                if test_x is not None:
+                    test_x_scaled = RS.transform(test_x.to_numpy())
+            elif scale_way == "MinMaxScaler":
+                MMS = MinMaxScaler()
+                train_x_scaled = MMS.fit_transform(train_x.to_numpy())
+                if test_x is not None:
+                    test_x_scaled = MMS.transform(test_x.to_numpy())
+            elif scale_way == "StandardScaler":
+                SS = StandardScaler()
+                train_x_scaled = SS.fit_transform(train_x.to_numpy())
+                if test_x is not None:
+                    test_x_scaled = SS.transform(test_x.to_numpy())
+            train_x = pd.DataFrame(train_x_scaled, index=train_x.index, columns=train_x.columns)
+            if test_x is not None:
+                test_x = pd.DataFrame(test_x_scaled, index=test_x.index, columns=test_x.columns)
+
+        self.data["train_x"] = train_x
+        self.data["test_x"] = test_x
+
+        qApp.main_window.log_te.append("\n" + "=" * 10 + self.parentWidget().class_name + "=" * 10)
+        if self.data["train_x"] is not None:
+            qApp.main_window.log_te.append("\n" + "train_x" + str(self.data["train_x"].shape))
+        if self.data["train_y"] is not None:
+            qApp.main_window.log_te.append("\n" + "train_y" + str(type(self.data["train_y"])))
+        if self.data["test_x"] is not None:
+            qApp.main_window.log_te.append("\n" + "test_x" + str(self.data["test_x"].shape))
+        if self.data["test_y"] is not None:
+            qApp.main_window.log_te.append("\n" + "test_y" + str(type(self.data["test_y"])))
+
+        self.parentWidget().data = self.data
         self.update_data()
 
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
             self.parent().next_widgets[0].update_data_from_previous()
 
         self.parentWidget().state_changed_handler("finish")
 
+
     def finish_handler(self):
         print("finished")
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
             self.parent().next_widgets[0].update_data_from_previous()
         self.hide()
-
 
 
 if __name__ == "__main__":

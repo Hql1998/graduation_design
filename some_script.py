@@ -30,7 +30,7 @@ train_set, test_set = splite_train_test(housing, test_ratio = 0.2)
 # train_set, test_set = train_test_split(housing,test_size=0.2, random_state=42)
 
 ## 使用分层分割的方法
-strat_train_set,strat_test_set = splite_train_test_stratified(housing,obj_col="median_income",bin_number=6,test_ratio=0.2)
+strat_train_set,strat_test_set = splite_train_test_stratified(housing, obj_col="median_income",bin_number=6,test_ratio=0.2)
 
 print(strat_train_set.loc[:,"income_cat"].value_counts()/len(strat_train_set))
 # print(housing.loc[:,"income_cat"].value_counts()/len(housing))

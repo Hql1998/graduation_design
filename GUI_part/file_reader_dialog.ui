@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>518</width>
-    <height>753</height>
+    <height>920</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,19 +18,6 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <spacer name="verticalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
@@ -39,76 +26,273 @@
       </size>
      </property>
      <property name="title">
-      <string>Files</string>
+      <string>Training Files</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" rowstretch="2,1" columnstretch="1,3">
-      <property name="leftMargin">
-       <number>15</number>
-      </property>
-      <property name="topMargin">
-       <number>15</number>
-      </property>
-      <property name="rightMargin">
-       <number>15</number>
-      </property>
-      <property name="bottomMargin">
-       <number>15</number>
-      </property>
-      <property name="spacing">
-       <number>15</number>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="Open_File_Btn" name="open_train_file_btn">
+        <property name="text">
+         <string>Open Training File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="label">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Traing File Name: </string>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignVCenter">
+         <widget class="QLabel" name="display_train_file_name_label">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>No File Selected</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="target_label_groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the class variable you want to predict&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="title">
+      <string>Target Label</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4" columnstretch="1,0,1,0" columnminimumwidth="1,0,1,0">
+      <item row="0" column="3">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="0" column="0">
-       <widget class="Open_File_Btn" name="open_file_btn">
-        <property name="text">
-         <string>Open File</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-       <widget class="QLabel" name="display_file_name_label">
-        <property name="styleSheet">
-         <string notr="true"/>
+       <widget class="QCheckBox" name="set_target_cb">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
         <property name="text">
-         <string>No File Selcted</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="label">
-        <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Arial&quot;;</string>
-        </property>
-        <property name="text">
-         <string>File Name: </string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" alignment="Qt::AlignHCenter">
-       <widget class="QCheckBox" name="checkBox">
-        <property name="text">
-         <string>Column Name at First Line</string>
+         <string>response variable at index of </string>
         </property>
         <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
       </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="target_index_comb"/>
+      </item>
      </layout>
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="minimumSize">
       <size>
-       <width>20</width>
-       <height>16</height>
+       <width>0</width>
+       <height>150</height>
       </size>
      </property>
-    </spacer>
+     <property name="title">
+      <string>Test Data Option</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <property name="bottomMargin">
+       <number>4</number>
+      </property>
+      <item>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>75</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>independent testing file</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="load_test_from_cb">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>load testing file from</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Open_File_Btn" name="open_test_file_btn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Open File</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_2">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Test File Name: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="display_test_file_name_label">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>No File Selcted</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Or</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,0,1,0,0,0" columnminimumwidth="1,0,1,0,0,0">
+         <item row="0" column="2">
+          <widget class="Split_Method_Combo" name="split_method_comb">
+           <item>
+            <property name="text">
+             <string>Random Split</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Stratified Shuffle Split</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>by</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QSpinBox" name="test_radio">
+           <property name="singleStep">
+            <number>5</number>
+           </property>
+           <property name="value">
+            <number>30</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>%</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="split_test_fro_train_cb">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>split from the taining file</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>at</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_6">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Or</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QCheckBox" name="without_test_cb">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>without testing file</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
@@ -127,7 +311,7 @@
         <property name="minimumSize">
          <size>
           <width>400</width>
-          <height>300</height>
+          <height>260</height>
          </size>
         </property>
         <property name="showGrid">
@@ -139,46 +323,38 @@
        </widget>
       </item>
       <item>
-       <widget class="Auxiliary_Table" name="tableWidget_describe"/>
+       <widget class="Auxiliary_Table" name="tableWidget_describe">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="apply_btn">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Apply</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="finish_btn">
+       <property name="text">
+        <string>Finish</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -199,57 +375,17 @@
     <slot>select_column()</slot>
    </slots>
   </customwidget>
+  <customwidget>
+   <class>Split_Method_Combo</class>
+   <extends>QComboBox</extends>
+   <header>split_method_combo</header>
+   <slots>
+    <slot>target_handler()</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>file_reader_dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>277</x>
-     <y>678</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>file_reader_dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>345</x>
-     <y>678</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>open_file_btn</sender>
-   <signal>file_path_changed()</signal>
-   <receiver>file_reader_dialog</receiver>
-   <slot>open_file_btn_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>115</x>
-     <y>53</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>514</x>
-     <y>173</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>tableWidget</sender>
    <signal>cellClicked(int,int)</signal>
@@ -258,11 +394,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>409</x>
-     <y>398</y>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
-     <x>433</x>
-     <y>579</y>
+     <x>452</x>
+     <y>769</y>
     </hint>
    </hints>
   </connection>
@@ -273,18 +409,134 @@
    <slot>select_column()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>393</x>
-     <y>282</y>
+     <x>412</x>
+     <y>608</y>
     </hint>
     <hint type="destinationlabel">
-     <x>467</x>
-     <y>558</y>
+     <x>486</x>
+     <y>769</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>open_train_file_btn</sender>
+   <signal>file_path_changed()</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>open_train_file_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>515</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>target_index_comb</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>target_label_changed_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>148</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>171</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>set_target_cb</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>split_method_comb</receiver>
+   <slot>target_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>108</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>apply_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>apply_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>901</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>817</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>finish_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>finish_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>895</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>793</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>open_test_file_btn</sender>
+   <signal>file_path_changed()</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>open_test_file_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>474</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>514</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>set_target_cb</sender>
+   <signal>clicked()</signal>
+   <receiver>file_reader_dialog</receiver>
+   <slot>display_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>513</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>open_file_btn_clicked()</slot>
+  <slot>open_train_file_btn_clicked_handler()</slot>
   <slot>display_table()</slot>
+  <slot>target_label_changed_handler()</slot>
+  <slot>apply_handler()</slot>
+  <slot>finish_handler()</slot>
+  <slot>open_test_file_btn_clicked_handler()</slot>
  </slots>
 </ui>

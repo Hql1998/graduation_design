@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>518</width>
-    <height>739</height>
+    <height>805</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,90 +16,7 @@
   <property name="styleSheet">
    <string notr="true">background: None;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="target_label_groupBox">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the class variable you want to predict&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="title">
-      <string>Target Label</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="3">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="target_index_comb"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="set_target_cb">
-        <property name="text">
-         <string>response variable at index of </string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,1,0,5,1">
    <item>
     <widget class="QGroupBox" name="text_feature_groupBox">
      <property name="minimumSize">
@@ -111,10 +28,17 @@
      <property name="title">
       <string>Text Feature</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <property name="verticalSpacing">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="topMargin">
        <number>9</number>
       </property>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Feature index from 0</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="drop_feature_by_index_cb">
         <property name="text">
@@ -132,43 +56,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Feature index from 0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLineEdit" name="onehot_index_le"/>
-      </item>
-      <item row="2" column="3">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="2" column="0">
        <widget class="QCheckBox" name="trans_into_ordinal_cb">
         <property name="text">
          <string>transform the text feature into ordinal</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLineEdit" name="ordinal_index_le"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="trans_into_onehot_cb">
-        <property name="text">
-         <string>transform the text feature into one-hot</string>
         </property>
        </widget>
       </item>
@@ -184,6 +75,32 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="ordinal_index_le"/>
+      </item>
+      <item row="2" column="3">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="trans_into_onehot_cb">
+        <property name="text">
+         <string>transform the text feature into one-hot</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="onehot_index_le"/>
       </item>
      </layout>
     </widget>
@@ -435,38 +352,6 @@
     <hint type="destinationlabel">
      <x>409</x>
      <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>set_target_cb</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>217</x>
-     <y>436</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>target_index_comb</sender>
-   <signal>currentTextChanged(QString)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>397</x>
-     <y>96</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>457</x>
-     <y>431</y>
     </hint>
    </hints>
   </connection>

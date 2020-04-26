@@ -3,6 +3,19 @@ from PyQt5.Qt import *
 from function_widget import *
 import pandas as pd
 from numpy import nan
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+
+
+def splite_train_test_stratified(data,obj_col,test_ratio=0.2):
+
+
+    for train_index, test_index in SSsplit.split(housing, housing[obj_col]):
+        strat_train_set = housing.loc[train_index]
+        strat_test_set = housing.loc[test_index]
+    return strat_train_set,strat_test_set
+
+
+
 
 class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
@@ -11,33 +24,109 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.setupUi(self)
+        self.setup_ui_subtle()
         # self.open_file_btn.click()
         self.setObjectName("file_reader_dialog")
-        self.dataFrame = None
+        self.dataFrame_train = None
+        self.dataFrame_test = None
+        self.dataFrame_test_loaded = None
         self.destroyed.connect(lambda: print("File_Reader_Dialog were destroyed"))
 
+    def setup_ui_subtle(self):
 
-    def open_file_btn_clicked(self):
-        if self.open_file_btn.open_result[0] != "":
+        btn_group = QButtonGroup(self)
+        btn_group.addButton(self.load_test_from_cb, 1)
+        btn_group.addButton(self.split_test_fro_train_cb, 2)
+        btn_group.addButton(self.without_test_cb, 3)
+
+        self.load_test_from_cb.toggled.connect(self.load_test_handler)
+        self.split_test_fro_train_cb.toggled.connect(self.split_test_fro_train_cb_toggled_handler)
+
+    def load_test_handler(self):
+        checked = self.load_test_from_cb.checkState()
+        if checked:
+            self.open_test_file_btn.setEnabled(True)
+            self.open_test_file_btn.click()
+        else:
+            self.open_test_file_btn.setEnabled(False)
+            self.dataFrame_test_loaded = None
+            self.display_test_file_name_label.setText("No File Selected")
+            self.display_test_file_name_label.adjustSize()
+
+    def update_target_comb(self, target_index=-1):
+
+        header_data = self.dataFrame_train.columns.to_list()
+        self.target_index_comb.clear()
+        self.target_index_comb.addItems(header_data)
+        if target_index == -1:
+            self.target_index_comb.setCurrentIndex(len(header_data) - 1)
+        else:
+            self.target_index_comb.setCurrentIndex(target_index)
+
+    def open_test_file_btn_clicked_handler(self):
+
+        if self.open_test_file_btn.open_result[0] != "":
+
+            self.display_test_file_name_label.setText(self.open_test_file_btn.open_result[0].split("/")[-1])
+            self.display_test_file_name_label.adjustSize()
+            self.read_test_data()
+
+    def read_test_data(self):
+
+        self.parentWidget().state_changed_handler("processing")
+        if self.open_test_file_btn.open_result[1] == "excel(*.xlsx)":
+            self.dataFrame_test_loaded = pd.read_excel(self.open_test_file_btn.open_result[0])
+        elif self.open_test_file_btn.open_result[1] == "csv(*.csv)":
+            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0])
+        elif self.open_test_file_btn.open_result[1] == "tsv(*.tsv)":
+            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0], sep="\t")
+
+
+    def open_train_file_btn_clicked_handler(self):
+        if self.open_train_file_btn.open_result[0] != "":
             self.parentWidget().state_changed_handler("start")
-            self.display_file_name_label.setText(self.open_file_btn.open_result[0].split("/")[-1])
-            self.display_file_name_label.adjustSize()
+            self.display_train_file_name_label.setText(self.open_train_file_btn.open_result[0].split("/")[-1])
+            self.display_train_file_name_label.adjustSize()
+
+            self.load_test_from_cb.setEnabled(True)
+            self.split_test_fro_train_cb.setEnabled(True)
+            self.without_test_cb.setEnabled(True)
+            self.set_target_cb.setEnabled(True)
+            self.apply_btn.setEnabled(True)
+
+            self.read_train_data()
+            self.update_target_comb(target_index=self.dataFrame_train.shape[1] - 1)
             self.display_table()
             self.display_table_describe()
 
+    def target_label_changed_handler(self,index):
+        print("target changed")
+        if self.set_target_cb.checkState():
+            self.display_table()
+
+    def split_test_fro_train_cb_toggled_handler(self):
+        pass
+
+    def read_train_data(self):
+
+        self.parentWidget().state_changed_handler("processing")
+        if self.open_train_file_btn.open_result[1] == "excel(*.xlsx)":
+            self.dataFrame_train = pd.read_excel(self.open_train_file_btn.open_result[0])
+        elif self.open_train_file_btn.open_result[1] == "csv(*.csv)":
+            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0])
+        elif self.open_train_file_btn.open_result[1] == "tsv(*.tsv)":
+            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0], sep="\t")
 
     def display_table(self):
 
-        self.parentWidget().state_changed_handler("processing")
-        if self.open_file_btn.open_result[1] == "excel(*.xlsx)":
-            self.parent().dataFrame = pd.read_excel(self.open_file_btn.open_result[0])
-        elif self.open_file_btn.open_result[1] == "csv(*.csv)":
-            self.parent().dataFrame = pd.read_csv(self.open_file_btn.open_result[0])
-        elif self.open_file_btn.open_result[1] == "tsv(*.tsv)":
-            self.parent().dataFrame = pd.read_csv(self.open_file_btn.open_result[0], sep="\t")
-
-        data = self.parent().dataFrame.replace(nan, 'N/A')
+        data = self.dataFrame_train.replace(nan, 'N/A')
+        if data.shape[0] * data.shape[1] > 10000:
+            data = data.head(20)
         header_data = data.columns.to_list()
+
+        if self.set_target_cb.checkState():
+            target_index = self.target_index_comb.currentIndex()
+            header_data[target_index] = header_data[target_index] + " (target)"
 
         self.tableWidget.setRowCount(data.shape[0])
         self.tableWidget.setColumnCount(data.shape[1])
@@ -49,13 +138,14 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 if data.iloc[i, j] == 'N/A':
                     item.setBackground(QColor("red"))
+                if self.set_target_cb.checkState() and j == target_index:
+                    item.setBackground(QColor("orange"))
                 self.tableWidget.setItem(i, j, item)
-
 
     def display_table_describe(self):
 
-        data_type = pd.DataFrame(self.parent().dataFrame.dtypes).transpose()
-        data_describe = self.parent().dataFrame.describe()
+        data_type = pd.DataFrame(self.dataFrame_train.dtypes).transpose()
+        data_describe = self.dataFrame_train.describe()
         data_describe = pd.concat([data_type, data_describe]).replace(nan, "N/A")
         index = [str(i) for i in data_describe.index]
         index[0] = "data type"
@@ -73,20 +163,91 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
                 self.tableWidget_describe.setItem(i, j, item)
 
+
+    def apply_handler(self):
+
+        self.dataFrame_test = None
+        self.read_train_data()
+
+        if self.split_test_fro_train_cb.checkState():
+            self.dataFrame_test = None
+            self.read_train_data()
+
+            test_ratio = self.test_radio.value() / 100
+            split_method = self.split_method_comb.currentText()
+            if split_method == "Random Split":
+                train_set, test_set = train_test_split(self.dataFrame_train, test_size=test_ratio , random_state=42)
+                self.dataFrame_train = train_set
+                self.dataFrame_test = test_set
+            elif split_method == "Stratified Shuffle Split":
+                SSsplit = StratifiedShuffleSplit(n_splits=1, test_size=test_ratio, random_state=42)
+                for train_index, test_index in SSsplit.split(self.dataFrame_train, self.dataFrame_train.iloc[:, -1]):
+                    strat_train_set = self.dataFrame_train.loc[train_index]
+                    strat_test_set = self.dataFrame_train.loc[test_index]
+                self.dataFrame_train = strat_train_set
+                self.dataFrame_test = strat_test_set
+            self.display_table()
+            self.display_table_describe()
+        if self.load_test_from_cb.checkState():
+            if self.dataFrame_test_loaded is None:
+                QErrorMessage.qtHandler()
+                qErrnoWarning("please select a test file")
+            else:
+                self.dataFrame_test = self.dataFrame_test_loaded
+        if self.without_test_cb.checkState():
+            self.dataFrame_test = None
+
+
+        self.parentWidget().data={}
+        target_index = self.target_index_comb.currentIndex()
+        qApp.main_window.log_te.append("\n"+"="*10 + self.parentWidget().class_name + "="*10)
+        if self.set_target_cb.checkState():
+            self.parentWidget().data["train_y"] = self.dataFrame_train.iloc[:, target_index]
+            self.parentWidget().data["train_x"] = self.dataFrame_train.drop(columns=self.dataFrame_train.columns[target_index])
+            qApp.main_window.log_te.append("\n" + "train_x's shape " +str(self.parentWidget().data["train_x"].shape)+  str(type(self.parentWidget().data["train_x"])))
+            qApp.main_window.log_te.append("\n" + "train_y's shape " + str(type(self.parentWidget().data["train_y"])))
+            if self.dataFrame_test is not None:
+                self.parentWidget().data["test_y"] = self.dataFrame_test.iloc[:, target_index]
+                self.parentWidget().data["test_x"] = self.dataFrame_test.drop(
+                    columns=self.dataFrame_test.columns[target_index])
+                qApp.main_window.log_te.append(
+                    "\n" + "test_x's shape " + str(self.parentWidget().data["test_x"].shape))
+                qApp.main_window.log_te.append(
+                    "\n" + "test_y's shape " + str(type(self.parentWidget().data["test_y"])))
+            else:
+                self.parentWidget().data["test_y"] = None
+                self.parentWidget().data["test_x"] = None
+                qApp.main_window.log_te.append("\n" + "test_x's shape " + "None")
+                qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
+        else:
+            self.parentWidget().data["train_y"] = None
+            self.parentWidget().data["train_x"] = self.dataFrame_train
+            qApp.main_window.log_te.append("\n" + "train_x's shape " + self.parentWidget().data["test_x"].shape)
+            qApp.main_window.log_te.append("\n" + "train_y's shape " + "None")
+            if self.dataFrame_test is not None:
+                self.parentWidget().data["test_y"] = None
+                self.parentWidget().data["test_x"] = self.dataFrame_test
+                qApp.main_window.log_te.append("\n" + "test_x's shape " + self.parentWidget().data["test_x"].shape)
+                qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
+            else:
+                self.parentWidget().data["test_y"] = None
+                self.parentWidget().data["test_x"] = None
+                qApp.main_window.log_te.append("\n" + "test_x's shape " + "None")
+                qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
+
+
+
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
+            self.parent().next_widgets[0].update_data_from_previous()
+
         self.parentWidget().state_changed_handler("finish")
+        # self.hide()
 
-    def accept(self):
-        print("accept")
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
+    def finish_handler(self):
+        print("finish")
+        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
             self.parent().next_widgets[0].update_data_from_previous()
         self.hide()
-
-    def reject(self):
-        print("reject")
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].dataFrame is None:
-            self.parent().next_widgets[0].update_data_from_previous()
-        self.hide()
-
 
 
 if __name__ == "__main__":
