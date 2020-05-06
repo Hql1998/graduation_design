@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">background: None;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,1,0,5,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,1,0,0,5,1">
    <item>
     <widget class="QGroupBox" name="text_feature_groupBox">
      <property name="minimumSize">
@@ -189,6 +189,45 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>GroupBox</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QCheckBox" name="save_file_cb">
+        <property name="text">
+         <string>save file(s) to</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Save_File_Btn" name="save_file_btn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Save the File</string>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QLabel" name="save_file_label">
+        <property name="text">
+         <string>No Directory selected</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -257,104 +296,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Save_File_Btn</class>
+   <extends>QPushButton</extends>
+   <header>save_file_btn</header>
+   <slots>
+    <signal>file_path_changed()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>drop_feature_by_index_cb</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>497</x>
-     <y>162</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>trans_into_ordinal_cb</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>158</x>
-     <y>248</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>191</x>
-     <y>180</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>trans_into_onehot_cb</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>206</x>
-     <y>277</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>173</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>drop_index_le</sender>
-   <signal>textEdited(QString)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>455</x>
-     <y>221</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>384</x>
-     <y>145</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ordinal_index_le</sender>
-   <signal>textEdited(QString)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>455</x>
-     <y>250</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>444</x>
-     <y>140</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>onehot_index_le</sender>
-   <signal>textEdited(QString)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>455</x>
-     <y>279</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>409</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>finish_btn</sender>
    <signal>clicked()</signal>
@@ -362,8 +315,8 @@
    <slot>finish_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>715</y>
+     <x>498</x>
+     <y>770</y>
     </hint>
     <hint type="destinationlabel">
      <x>360</x>
@@ -378,8 +331,8 @@
    <slot>apply_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>715</y>
+     <x>140</x>
+     <y>770</y>
     </hint>
     <hint type="destinationlabel">
      <x>68</x>
@@ -388,34 +341,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>scaled_cb</sender>
+   <sender>save_file_btn</sender>
+   <signal>file_path_changed()</signal>
+   <receiver>data_preprocessing</receiver>
+   <slot>save_file_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>302</x>
+     <y>321</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>358</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_file_cb</sender>
    <signal>clicked(bool)</signal>
    <receiver>data_preprocessing</receiver>
    <slot>parameter_changed_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>127</x>
-     <y>381</y>
+     <x>86</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
-     <x>87</x>
-     <y>450</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scale_by_comb</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>data_preprocessing</receiver>
-   <slot>parameter_changed_handler()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>382</x>
-     <y>383</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>345</x>
-     <y>454</y>
+     <x>517</x>
+     <y>337</y>
     </hint>
    </hints>
   </connection>
@@ -424,5 +377,6 @@
   <slot>parameter_changed_handler()</slot>
   <slot>apply_handler()</slot>
   <slot>finish_handler()</slot>
+  <slot>save_file_btn_clicked_handler()</slot>
  </slots>
 </ui>

@@ -31,14 +31,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.addToolBar(self.tool_bar)
 
         # self.draw_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.fw = File_Reader_Function_Widget(self.draw_scroll_area_content)
-        self.fw.icon_btn.setText("file reader")
+        self.frfw = File_Reader_Function_Widget(self.draw_scroll_area_content)
+        self.frfw.icon_btn.setText("FReader")
 
-        self.fw1 = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
-        self.fw1.icon_btn.setText("Data_Preproce")
+        self.defw = Deal_With_Empty_Value_Function_Widget(self.draw_scroll_area_content)
+        self.defw.icon_btn.setText("Empty")
 
-        self.fw2 = Deal_With_Empty_Value_Function_Widget(self.draw_scroll_area_content)
-        self.fw2.icon_btn.setText("Empty")
+        self.dpfw = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
+        self.dpfw.icon_btn.setText("Preproce")
+
+        self.llrfw = Lasso_Logistic_Regression_Function_Widget(self.draw_scroll_area_content)
+        self.llrfw.icon_btn.setText("LLRCV")
 
         self.status_bar.showMessage("success to load on the mainwindow", 5000)
 

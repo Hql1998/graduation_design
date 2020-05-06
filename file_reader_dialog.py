@@ -6,17 +6,6 @@ from numpy import nan
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 
-def splite_train_test_stratified(data,obj_col,test_ratio=0.2):
-
-
-    for train_index, test_index in SSsplit.split(housing, housing[obj_col]):
-        strat_train_set = housing.loc[train_index]
-        strat_test_set = housing.loc[test_index]
-    return strat_train_set,strat_test_set
-
-
-
-
 class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
     state_changed = pyqtSignal(str)
@@ -120,7 +109,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
     def display_table(self):
 
         data = self.dataFrame_train.replace(nan, 'N/A')
-        if data.shape[0] * data.shape[1] > 10000:
+        if data.shape[0] * data.shape[1] > 7000:
             data = data.head(20)
         header_data = data.columns.to_list()
 
@@ -163,11 +152,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
                 self.tableWidget_describe.setItem(i, j, item)
 
-
     def apply_handler(self):
-
-        self.dataFrame_test = None
-        self.read_train_data()
 
         if self.split_test_fro_train_cb.checkState():
             self.dataFrame_test = None
@@ -199,9 +184,11 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
 
         self.parentWidget().data={}
-        target_index = self.target_index_comb.currentIndex()
         qApp.main_window.log_te.append("\n"+"="*10 + self.parentWidget().class_name + "="*10)
+
         if self.set_target_cb.checkState():
+
+            target_index = self.target_index_comb.currentIndex()
             self.parentWidget().data["train_y"] = self.dataFrame_train.iloc[:, target_index]
             self.parentWidget().data["train_x"] = self.dataFrame_train.drop(columns=self.dataFrame_train.columns[target_index])
             qApp.main_window.log_te.append("\n" + "train_x's shape " +str(self.parentWidget().data["train_x"].shape)+  str(type(self.parentWidget().data["train_x"])))
@@ -220,14 +207,16 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
                 qApp.main_window.log_te.append("\n" + "test_x's shape " + "None")
                 qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
         else:
+
             self.parentWidget().data["train_y"] = None
             self.parentWidget().data["train_x"] = self.dataFrame_train
-            qApp.main_window.log_te.append("\n" + "train_x's shape " + self.parentWidget().data["test_x"].shape)
+            qApp.main_window.log_te.append("\n" + "train_x's shape " + str(self.parentWidget().data["train_x"].shape))
             qApp.main_window.log_te.append("\n" + "train_y's shape " + "None")
+
             if self.dataFrame_test is not None:
                 self.parentWidget().data["test_y"] = None
                 self.parentWidget().data["test_x"] = self.dataFrame_test
-                qApp.main_window.log_te.append("\n" + "test_x's shape " + self.parentWidget().data["test_x"].shape)
+                qApp.main_window.log_te.append("\n" + "test_x's shape " + str(self.parentWidget().data["test_x"].shape))
                 qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
             else:
                 self.parentWidget().data["test_y"] = None
@@ -235,20 +224,16 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
                 qApp.main_window.log_te.append("\n" + "test_x's shape " + "None")
                 qApp.main_window.log_te.append("\n" + "test_y's shape " + "None")
 
-
-
         if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
             self.parent().next_widgets[0].update_data_from_previous()
 
         self.parentWidget().state_changed_handler("finish")
-        # self.hide()
 
     def finish_handler(self):
         print("finish")
         if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
             self.parent().next_widgets[0].update_data_from_previous()
         self.hide()
-
 
 if __name__ == "__main__":
     import sys

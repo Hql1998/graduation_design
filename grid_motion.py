@@ -45,6 +45,6 @@ class Grid_Motion:
 
     @staticmethod
     def grid_size(width, height):
-        width = min(880, width // Grid_Motion.grid_width * Grid_Motion.grid_width)
-        height = min(720, height // Grid_Motion.grid_width * Grid_Motion.grid_width)
+        width = min(2000, width // Grid_Motion.grid_width * Grid_Motion.grid_width)
+        height = min(1200, height // Grid_Motion.grid_width * Grid_Motion.grid_width)
         return [width, height]

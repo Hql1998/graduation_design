@@ -9,7 +9,7 @@ class File_Reader_Function_Widget(Function_Widget):
         self.connected_dialog = None
         self.first_click = True
         self.data = None
-        self.allowed_next_fun_widget_list = ["deal_empty", "data_preprocessing"]
+        self.allowed_next_fun_widget_list = ["deal_empty", "data_preprocessing","lasso_logistic_regression"]
         print("file_reader object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
 

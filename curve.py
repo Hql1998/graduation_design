@@ -54,7 +54,6 @@ class Curve(QWidget):
         painter.setPen(pen)
         painter.begin(self)
         painter.drawPath(cubicPath)
-        painter.end()
 
     def mousePressEvent(self, e):
         if self.function_widget is not None:

@@ -57,6 +57,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.log_scroll_area_content)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.log_te = QtWidgets.QTextEdit(self.log_scroll_area_content)
+        self.log_te.setReadOnly(True)
         self.log_te.setObjectName("log_te")
         self.verticalLayout_3.addWidget(self.log_te)
         self.log_scroll_tab.setWidget(self.log_scroll_area_content)

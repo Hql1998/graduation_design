@@ -32,8 +32,8 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         else:
             data = self.data["train_x"].replace(nan, 'N/A')
 
-        if data.shape[0] * data.shape[1] > 10000:
-            data = data.head(30)
+        if data.shape[0] * data.shape[1] > 7000:
+            data = data.head(20)
         header_data = data.columns.to_list()
         header_data[-1] = header_data[-1] + "(target)"
         for index, value in enumerate(header_data):
@@ -63,6 +63,8 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         test_x = self.data["test_x"]
         test_y = self.data["test_y"]
 
+        print("good0")
+
         if self.drop_feature_by_threshold_cb.checkState():
             threshold_text = self.threshold_sb.text().strip()
             try:
@@ -72,13 +74,15 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
                     data = data.dropna(axis=1, thresh=threshold)
                     train_x = data.iloc[0:train_x.shape[0], :]
                     test_x = data.iloc[train_x.shape[0]:, :]
+                    print(train_x.shape, test_x.shape)
                 else:
-                    train_x= train_x.dropna(axis=1, thresh=threshold)
-                print(train_x.shape, test_x.shape)
+                    train_x = train_x.dropna(axis=1, thresh=threshold)
+                    print(train_x.shape)
 
             except ValueError as e:
                 QErrorMessage.qtHandler()
                 qErrnoWarning("invalid input at drop na by threshold line edit")
+
 
         if self.drop_empty_case_cb.checkState():
             if train_y is not None:
@@ -95,7 +99,6 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
                     test_x = data_test.iloc[:, 0:-1]
                 else:
                     test_x = test_x.dropna(axis=0, how="any")
-        print("drop_empty_case_cb",train_x.shape, test_x.shape)
 
 
         text_feature_name_list = list(train_x.dtypes[train_x.dtypes == numpy.object].to_dict().keys())
@@ -140,8 +143,6 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         train_x = train_x_text.merge(train_x_numeric, left_index=True, right_index=True)
         if test_x is not None:
             test_x = test_x_text.merge(test_x_numeric, left_index=True, right_index=True)
-
-        print("text.merge(train_x_numeric",train_x.shape, test_x.shape)
 
         self.data["train_x"] = train_x
         self.data["train_y"] = train_y

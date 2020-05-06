@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>463</width>
+    <height>850</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>20</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Lasso Logistic Regression</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,1,0">
+   <item>
+    <widget class="QGroupBox" name="groupBox_1">
+     <property name="title">
+      <string>parameter setting</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="title">
+         <string>train a model</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>Folds for Cross Validatin</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QSpinBox" name="cv_folds_sp">
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>Grid Space of Cs from </string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_9">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>10 ^</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QSpinBox" name="grid_start_sp">
+           <property name="minimum">
+            <number>-6</number>
+           </property>
+           <property name="maximum">
+            <number>-1</number>
+           </property>
+           <property name="value">
+            <number>-2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="label_3">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>to 10 ^</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QSpinBox" name="grid_end_sp">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>6</number>
+           </property>
+           <property name="value">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="5">
+          <widget class="QLabel" name="label_4">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="6">
+          <widget class="QSpinBox" name="grid_num_sp">
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="singleStep">
+            <number>5</number>
+           </property>
+           <property name="value">
+            <number>25</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="toolTip">
+            <string>Tolerance for stopping criteria.</string>
+           </property>
+           <property name="text">
+            <string>Tolerance</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_7">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>10 ^</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QSpinBox" name="tol_sp">
+           <property name="minimum">
+            <number>-10</number>
+           </property>
+           <property name="maximum">
+            <number>-2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="toolTip">
+            <string>Maximum number of iterations of the optimization algorithm.</string>
+           </property>
+           <property name="text">
+            <string>Max_iter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_8">
+           <property name="styleSheet">
+            <string notr="true">font-size:12px;</string>
+           </property>
+           <property name="text">
+            <string>10 ^</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QSpinBox" name="max_iter_sp">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QCheckBox" name="balanced_class_weight_cb">
+           <property name="text">
+            <string>balanced class weight</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QLabel" name="label_10">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>CV target scoring metrix</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2" colspan="2">
+          <widget class="QComboBox" name="scoring_comb">
+           <item>
+            <property name="text">
+             <string/>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Or load a model</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="load_model_cb">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>load Model</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignVCenter">
+          <widget class="QLabel" name="display_model_name_label">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>No File Selcted</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Open_Model_Btn" name="open_model_btn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Load model(joblib file)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Out Parameters</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0" colspan="2">
+       <widget class="QCheckBox" name="plot_roc_cb">
+        <property name="text">
+         <string>Plot ROC on training and testing datsets</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="plot_lasso_cb">
+        <property name="text">
+         <string>Plot lasso regularizaton profile</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="output_cla_rep_cb">
+        <property name="text">
+         <string>Output classification report</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="save_file_cb">
+        <property name="text">
+         <string>save transformed training (and testng) file(s) to</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="Save_File_Btn" name="save_file_btn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Save the Files</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="save_file_label">
+        <property name="text">
+         <string>No Directory selected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="save_model_cb">
+        <property name="text">
+         <string>save fitted model into</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="Save_Model_Btn" name="save_model_btn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Save the Model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" alignment="Qt::AlignVCenter">
+       <widget class="QLabel" name="save_model_label">
+        <property name="text">
+         <string>No Directory selected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="output_confusion_cb">
+        <property name="text">
+         <string>Output confusion matrix</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>output field</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTextBrowser" name="textBrowser"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="apply_btn">
+        <property name="text">
+         <string>Apply</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="reset_btn">
+        <property name="text">
+         <string>Reset From Previous</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="finish_btn">
+        <property name="text">
+         <string>Finish</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Save_File_Btn</class>
+   <extends>QPushButton</extends>
+   <header>save_file_btn</header>
+   <slots>
+    <signal>file_path_changed()</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>Save_Model_Btn</class>
+   <extends>QPushButton</extends>
+   <header>save_model_btn</header>
+  </customwidget>
+  <customwidget>
+   <class>Open_Model_Btn</class>
+   <extends>QPushButton</extends>
+   <header>open_model_btn</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>apply_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>apply_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>831</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>498</x>
+     <y>617</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>finish_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>finish_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>417</x>
+     <y>831</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>656</x>
+     <y>615</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>open_model_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>open_model_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>242</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>323</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>load_model_cb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Dialog</receiver>
+   <slot>load_model_cb_toggled_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>576</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_model_cb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Dialog</receiver>
+   <slot>save_model_cb_toggled_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>220</x>
+     <y>475</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_model_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>save_model_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>502</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>549</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_file_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>save_file_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>442</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>495</x>
+     <y>477</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_file_cb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Dialog</receiver>
+   <slot>save_file_cb_toggled_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>178</x>
+     <y>408</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>469</x>
+     <y>530</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>apply_handler()</slot>
+  <slot>finish_handler()</slot>
+  <slot>load_model_cb_toggled_handler()</slot>
+  <slot>open_model_btn_clicked_handler()</slot>
+  <slot>save_model_cb_toggled_handler()</slot>
+  <slot>save_model_btn_clicked_handler()</slot>
+  <slot>save_file_btn_clicked_handler()</slot>
+  <slot>save_file_cb_toggled_handler()</slot>
+ </slots>
+</ui>
