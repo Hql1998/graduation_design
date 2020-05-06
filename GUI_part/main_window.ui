@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1110</width>
-    <height>810</height>
+    <width>1208</width>
+    <height>828</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,19 +26,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
@@ -90,7 +78,7 @@
        <attribute name="title">
         <string>Logs</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QScrollArea" name="log_scroll_tab">
           <property name="styleSheet">
@@ -139,7 +127,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1110</width>
+     <width>1208</width>
      <height>23</height>
     </rect>
    </property>
@@ -161,19 +149,18 @@ p, li { white-space: pre-wrap; }
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>280</width>
      <height>143</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>400</width>
+     <width>500</width>
      <height>524287</height>
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">
-background-color: rgb(200, 200, 200);</string>
+    <string notr="true">background-color: rgba(159, 211, 167, 120);</string>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -209,8 +196,14 @@ background-color: rgb(200, 200, 200);</string>
      </property>
      <item>
       <widget class="QToolBox" name="toolBox">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(200, 200, 200);</string>
+        <string notr="true">background-color: rgba(159, 211, 167, 20);</string>
        </property>
        <property name="currentIndex">
         <number>0</number>
@@ -220,16 +213,44 @@ background-color: rgb(200, 200, 200);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>200</width>
-          <height>691</height>
+          <width>280</width>
+          <height>709</height>
          </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <attribute name="label">
          <string>Frequent Use</string>
         </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QWidget" name="widget" native="true"/>
+          <widget class="QPushButton" name="pushButton_4">
+           <property name="text">
+            <string>File Reader</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="text">
+            <string>Deal with Empty Value</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Drop &amp; Transform &amp; Standarization</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="text">
+            <string>Lasso Logistic Regression with CV</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -238,18 +259,14 @@ background-color: rgb(200, 200, 200);</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>200</width>
+          <width>300</width>
           <height>691</height>
          </rect>
         </property>
         <attribute name="label">
          <string>Standard Library</string>
         </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QWidget" name="widget_2" native="true"/>
-         </item>
-        </layout>
+        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
        </widget>
       </widget>
      </item>
@@ -277,5 +294,76 @@ background-color: rgb(200, 200, 200);</string>
  <resources>
   <include location="resouce.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>file_reader_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>109</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>632</x>
+     <y>-13</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>deal_with_empty_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>151</x>
+     <y>343</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>487</x>
+     <y>-21</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drop_transform_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>486</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>525</x>
+     <y>-3</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>lasso_logistic_regression_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>628</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>460</x>
+     <y>-7</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>file_reader_btn_clicked_handler()</slot>
+  <slot>deal_with_empty_btn_clicked_handler()</slot>
+  <slot>drop_transform_btn_clicked_handler()</slot>
+  <slot>lasso_logistic_regression_btn_clicked_handler()</slot>
+ </slots>
 </ui>

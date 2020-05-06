@@ -4,6 +4,7 @@ from PyQt5.Qt import *
 class Start_Label(QLabel):
     def __init__(self,parent = None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        self.not_find = True
         self.setup_ui()
 
     def setup_ui(self):
@@ -44,12 +45,18 @@ class End_Label(QLabel):
         for function_widget in self.draw_area_content.function_widget_set:
             if function_widget is not self.parentWidget().function_widget and function_widget.class_name in self.parentWidget().function_widget.allowed_next_fun_widget_list:
                 if function_widget.geometry().contains(self.draw_area_content.mapFromGlobal(me.globalPos())):
-                    self.not_find = False
-                    left_sucket_point = function_widget.get_left_sucket()
-                    function_widget.previous_widgets.append(self.parentWidget().function_widget)
-                    function_widget.update_data_from_previous()
-                    self.parentWidget().function_widget.next_widgets.append(function_widget)
-                    self.parentWidget().end_label_moved_handler(left_sucket_point.x() +20, left_sucket_point.y() +20)
+                    if function_widget.present_previouse_num < function_widget.allowed_previouse_num and self.parentWidget().function_widget.present_next_num < self.parentWidget().function_widget.allowed_next_num:
+                        if self.parentWidget().function_widget not in function_widget.previous_widgets:
+                            function_widget.present_previouse_num += 1
+                            self.parentWidget().function_widget.present_next_num += 1
+                            self.parentWidget().function_widget.right_btn.start_curve()
+                            self.not_find = False
+                            left_sucket_point = function_widget.get_left_sucket()
+                            function_widget.previous_widgets.append(self.parentWidget().function_widget)
+                            self.parentWidget().end_label_function_widget = function_widget
+                            function_widget.update_data_from_previous()
+                            self.parentWidget().function_widget.next_widgets.append(function_widget)
+                            self.parentWidget().end_label_moved_handler(left_sucket_point.x()+20, left_sucket_point.y()+20)
 
         if self.not_find:
             self.move(0, 0)
@@ -60,8 +67,12 @@ class End_Label(QLabel):
 
             if self.parentWidget().function_widget is not None:
                 if self.parentWidget().function_widget.next_widgets != []:
-                    for next_widget in self.parentWidget().function_widget.next_widgets:
-                        next_widget.previous_widgets = []
-                    self.parentWidget().function_widget.next_widgets = []
-
-        self.raise_()
+                    if self.parentWidget().end_label_function_widget is not None:
+                        connect_widget_index = self.parentWidget().function_widget.next_widgets.index(self.parentWidget().end_label_function_widget)
+                        del self.parentWidget().function_widget.next_widgets[connect_widget_index]
+                        connect_widget_index = self.parentWidget().end_label_function_widget.previous_widgets.index(self.parentWidget().function_widget)
+                        del self.parentWidget().end_label_function_widget.previous_widgets[connect_widget_index]
+                        self.parentWidget().function_widget.present_next_num -= 1
+                        self.parentWidget().end_label_function_widget.present_previouse_num -= 1
+            self.parentWidget().end_label_function_widget = None
+            self.parentWidget().raise_()

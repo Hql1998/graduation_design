@@ -164,8 +164,10 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         self.parentWidget().state_changed_handler("finish")
 
     def finish_handler(self):
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
-            self.parent().next_widgets[0].update_data_from_previous()
+        if self.parent().next_widgets != []:
+            for next_widget in self.parent().next_widgets:
+                if next_widget.data is None:
+                    next_widget.update_data_from_previous()
         self.hide()
 
 

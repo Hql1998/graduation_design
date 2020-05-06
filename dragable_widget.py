@@ -19,8 +19,9 @@ class Dragable_Widget(QFrame):
             self.mouse_y_dynamic = e.globalY()
 
         self.raise_()
-        if self.right_btn.curve is not None:
-            self.right_btn.curve.raise_()
+        if self.right_btn.curves != []:
+            for curve in self.right_btn.curves:
+                curve.raise_()
 
 
     def mouseMoveEvent(self, e):

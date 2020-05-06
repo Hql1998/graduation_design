@@ -18,7 +18,12 @@ class Function_Widget(Dragable_Widget):
         self.next_widgets = []
         self.previous_widgets = []
         self.allowed_next_fun_widget_list = []
-        self.dataFrame = None
+        self.allowed_previouse_num = 1
+        self.allowed_next_num = 1
+        self.present_previouse_num = 0
+        self.present_next_num = 0
+
+        self.data = None
         self.connected_dialog = None
 
         self.setupUi()
@@ -83,6 +88,7 @@ class Function_Widget(Dragable_Widget):
         self.horizontalLayout.addLayout(self.mid_vertical_layout)
 
         self.right_btn = MyRightBtn(self)
+        self.right_btn.start_curve()
         self.right_btn.setFixedSize(self.right_btn_size)
         self.right_btn.setFlat(True)
         self.right_btn.setObjectName("right_btn")
@@ -122,12 +128,12 @@ class Function_Widget(Dragable_Widget):
         return None
 
     def close_btn_handler(self):
-
-        self.right_btn.curve.deleteLater()
+        for curve in self.right_btn.curves:
+            curve.deleteLater()
         if self.previous_widgets != []:
             for previous_widget in self.previous_widgets:
-                previous_widget.right_btn.curve.end_label_moved_handler(previous_widget.right_btn.get_mid_pos().x()+20,
-                                                                        previous_widget.right_btn.get_mid_pos().y()+20)
+                for curve in previous_widget.right_btn.curves:
+                    curve.end_label_moved_handler(previous_widget.right_btn.get_mid_pos().x()+20, previous_widget.right_btn.get_mid_pos().y()+20)
                 try:
                     del previous_widget.next_widgets[previous_widget.next_widgets.index(self)]
                 except ValueError as e:
@@ -140,6 +146,8 @@ class Function_Widget(Dragable_Widget):
                 except ValueError as e:
                     print(e)
         self.deleteLater()
+        qApp.main_window.function_widget_dict[self.class_name].remove(self)
+        print(qApp.main_window.function_widget_dict)
 
 
     def state_changed_handler(self, state):
@@ -162,14 +170,19 @@ class Function_Widget(Dragable_Widget):
 
     def moveEvent(self, me):
         point = self.get_left_sucket()
-        if self.right_btn.curve is not None:
-            self.right_btn.curve.move(me.pos()+QPoint(8/10*self.width(), 1/2*self.height()-10))
+        if self.right_btn.curves != []:
+            for curve in self.right_btn.curves:
+                curve.move(me.pos()+QPoint(8/10*self.width(), 1/2*self.height()-10))
         if self.previous_widgets != []:
             for previous_widget in self.previous_widgets:
-                previous_widget.right_btn.curve.end_label_moved_handler(point.x()+20, point.y()+20)
+                for curve in previous_widget.right_btn.curves:
+                    if curve.end_label_function_widget is self:
+                        curve.end_label_moved_handler(point.x()+20, point.y()+20)
         if self.next_widgets != []:
             for next_widget in self.next_widgets:
-                self.right_btn.curve.end_label_moved_handler(next_widget.get_left_sucket().x() +20, next_widget.get_left_sucket().y()+20)
+                for curve in self.right_btn.curves:
+                    if curve.end_label_function_widget is next_widget:
+                        curve.end_label_moved_handler(next_widget.get_left_sucket().x() +20, next_widget.get_left_sucket().y()+20)
 
     def get_left_sucket(self):
         return self.mapToGlobal(QPoint(0,0))+QPoint(0*self.width(), 1/2*self.height() - 10)

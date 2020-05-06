@@ -9,17 +9,24 @@ class MyRightBtn(QPushButton):
         # self.setCheckable(True)
         self.setObjectName("right_emiter_btn")
         self.receiver_btn = None
-        self.curve = None
-        self.start_curve()
+        self.curves = []
+
 
     def start_curve(self):
-        if self.curve is None:
+        # if self.curve == []:
+        #     start_point = self.get_mid_pos()
+        #     self.curve.append(Curve(self.parentWidget().parentWidget()))
+        #     self.curve[0].function_widget = self.parentWidget()
+        #     self.curve[0].move(start_point)
+        # else:
+        #     pass
+        if self.parentWidget().present_next_num < self.parentWidget().allowed_next_num:
             start_point = self.get_mid_pos()
-            self.curve = Curve(self.parentWidget().parentWidget())
-            self.curve.function_widget = self.parentWidget()
-            self.curve.move(start_point)
-        else:
-            self.curve.end_label.raise_()
+            curve = Curve(self.parentWidget().parentWidget(), function_widget=self.parentWidget())
+            curve.move(self.parentWidget().parentWidget().mapFromGlobal(start_point))
+            curve.raise_()
+            self.curves.append(curve)
+
 
     def get_mid_pos(self):
          return self.parentWidget().mapToGlobal(QPoint(0,0)) + QPoint(4 / 5 * self.parentWidget().width(),

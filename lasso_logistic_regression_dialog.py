@@ -286,7 +286,7 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
             if len(LLRCV.coef_[0]) != len(self.data["train_x"].columns.values):
                 QErrorMessage.qtHandler()
                 qErrnoWarning("the data shape dosen't match the model")
-                return None
+                return True
 
             if self.multiclass:
                 print(LLRCV.C_)
@@ -492,8 +492,6 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
 
         self.parentWidget().state_changed_handler("processing")
 
-
-
         if self.data["test_y"] is None:
             QErrorMessage.qtHandler()
             qErrnoWarning("you didn't have a testing or target label")
@@ -505,7 +503,9 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         else:
             self.train_a_model()
 
-        self.print_result()
+        if self.print_result():
+            return None
+
         if self.plot_lasso_cb.checkState():
             if len(self.LLRCV.classes_)>2:
                 self.plot_regularization_path_multiclass()
@@ -531,8 +531,10 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
 
     def finish_handler(self):
 
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
-            self.parent().next_widgets[0].update_data_from_previous()
+        if self.parent().next_widgets != []:
+            for next_widget in self.parent().next_widgets:
+                if next_widget.data is None:
+                    next_widget.update_data_from_previous()
         self.hide()
 
 

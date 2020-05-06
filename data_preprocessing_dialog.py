@@ -256,8 +256,10 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
 
     def finish_handler(self):
         print("finished")
-        if self.parent().next_widgets != [] and self.parent().next_widgets[0].data is None:
-            self.parent().next_widgets[0].update_data_from_previous()
+        if self.parent().next_widgets != []:
+            for next_widget in self.parent().next_widgets:
+                if next_widget.data is None:
+                    next_widget.update_data_from_previous()
         self.hide()
 
 

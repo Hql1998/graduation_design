@@ -4,11 +4,12 @@ from grid_motion import Grid_Motion
 
 class Curve(QWidget):
 
-    def __init__(self, parent=None,*args, **kwargs):
+    def __init__(self, parent=None, function_widget=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.start_point = QPointF(10, 10)
         self.end_point = QPointF(self.width(), self.height())
-        self.function_widget = None
+        self.function_widget = function_widget
+        self.end_label_function_widget = None
         self.setup_ui()
         self.show()
 
@@ -52,12 +53,13 @@ class Curve(QWidget):
         painter = QPainter(self)
         pen = QPen(QColor("gray"), 1)
         painter.setPen(pen)
-        painter.begin(self)
         painter.drawPath(cubicPath)
 
     def mousePressEvent(self, e):
-        if self.function_widget is not None:
-            self.function_widget.raise_()
+        # if self.function_widget is not None:
+        #     self.function_widget.raise_()
+        self.raise_()
+        e.ignore()
 
     def resizeEvent(self, re):
 
@@ -67,7 +69,6 @@ class Curve(QWidget):
         self.start_label.move(self.start_point.x()-10,self.start_point.y()-10)
 
     def moveEvent(self, e):
-
         self.old_pos = self.function_widget.right_btn.get_mid_pos()
 
     def end_label_moved_handler(self, x, y):

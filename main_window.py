@@ -17,6 +17,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.tool_bar = QToolBar(self)
         self.setup_ui_subtle()
 
+        # widget management
+        self.function_widget_dict ={"file_reader":[],
+                                    "deal_empty": [],
+                                    "data_preprocessing": [],
+                                    "lasso_logistic_regression": []
+                                    }
 
     def setup_ui_subtle(self):
 
@@ -30,20 +36,30 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.addToolBar(self.tool_bar)
 
-        # self.draw_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.frfw = File_Reader_Function_Widget(self.draw_scroll_area_content)
-        self.frfw.icon_btn.setText("FReader")
-
-        self.defw = Deal_With_Empty_Value_Function_Widget(self.draw_scroll_area_content)
-        self.defw.icon_btn.setText("Empty")
-
-        self.dpfw = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
-        self.dpfw.icon_btn.setText("Preproce")
-
-        self.llrfw = Lasso_Logistic_Regression_Function_Widget(self.draw_scroll_area_content)
-        self.llrfw.icon_btn.setText("LLRCV")
-
         self.status_bar.showMessage("success to load on the mainwindow", 5000)
+
+    def file_reader_btn_clicked_handler(self):
+        frfw = File_Reader_Function_Widget(self.draw_scroll_area_content)
+        frfw.icon_btn.setText("FReader")
+        frfw.show()
+        self.function_widget_dict[frfw.class_name].append(frfw)
+
+    def deal_with_empty_btn_clicked_handler(self):
+        defw = Deal_With_Empty_Value_Function_Widget(self.draw_scroll_area_content)
+        defw.icon_btn.setText("Empty")
+        defw.show()
+        self.function_widget_dict[defw.class_name].append(defw)
+    def drop_transform_btn_clicked_handler(self):
+        dpfw = Data_Preprocessing_Function_Widget(self.draw_scroll_area_content)
+        dpfw.icon_btn.setText("Preproce")
+        dpfw.show()
+        self.function_widget_dict[dpfw.class_name].append(dpfw)
+    def lasso_logistic_regression_btn_clicked_handler(self):
+        llrfw = Lasso_Logistic_Regression_Function_Widget(self.draw_scroll_area_content)
+        llrfw.icon_btn.setText("LLRCV")
+        llrfw.show()
+        self.function_widget_dict[llrfw.class_name].append(llrfw)
+
 
     def status_initiate(self):
         if os.path.isfile('./temp/p.txt'):
