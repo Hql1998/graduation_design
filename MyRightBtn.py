@@ -13,13 +13,7 @@ class MyRightBtn(QPushButton):
 
 
     def start_curve(self):
-        # if self.curve == []:
-        #     start_point = self.get_mid_pos()
-        #     self.curve.append(Curve(self.parentWidget().parentWidget()))
-        #     self.curve[0].function_widget = self.parentWidget()
-        #     self.curve[0].move(start_point)
-        # else:
-        #     pass
+
         if self.parentWidget().present_next_num < self.parentWidget().allowed_next_num:
             start_point = self.get_mid_pos()
             curve = Curve(self.parentWidget().parentWidget(), function_widget=self.parentWidget())

@@ -3,6 +3,7 @@ from PyQt5.Qt import *
 from function_widget import *
 import pandas as pd
 from numpy import nan
+from print_to_log import *
 from sklearn.preprocessing import OneHotEncoder,OrdinalEncoder,StandardScaler,MinMaxScaler,RobustScaler
 
 
@@ -176,50 +177,51 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
                 if test_x is not None:
                     test_x_need_change = test_x
 
-            if scale_way == "RobustScaler":
-                RS = RobustScaler()
-                train_x_scaled = RS.fit_transform(train_x_need_change.to_numpy())
-                if test_x is not None:
-                    test_x_scaled = RS.transform(test_x_need_change.to_numpy())
-            elif scale_way == "MinMaxScaler":
-                MMS = MinMaxScaler()
-                train_x_scaled = MMS.fit_transform(train_x_need_change.to_numpy())
-                if test_x is not None:
-                    test_x_scaled = MMS.transform(test_x_need_change.to_numpy())
-            elif scale_way == "StandardScaler":
-                SS = StandardScaler()
-                train_x_scaled = SS.fit_transform(train_x_need_change.to_numpy())
-                if test_x is not None:
-                    test_x_scaled = SS.transform(test_x_need_change.to_numpy())
+            if train_x_need_change.shape[1] > 0:
+                if scale_way == "RobustScaler":
+                    RS = RobustScaler()
+                    train_x_scaled = RS.fit_transform(train_x_need_change.to_numpy())
+                    if test_x is not None:
+                        test_x_scaled = RS.transform(test_x_need_change.to_numpy())
+                elif scale_way == "MinMaxScaler":
+                    MMS = MinMaxScaler()
+                    train_x_scaled = MMS.fit_transform(train_x_need_change.to_numpy())
+                    if test_x is not None:
+                        test_x_scaled = MMS.transform(test_x_need_change.to_numpy())
+                elif scale_way == "StandardScaler":
+                    SS = StandardScaler()
+                    train_x_scaled = SS.fit_transform(train_x_need_change.to_numpy())
+                    if test_x is not None:
+                        test_x_scaled = SS.transform(test_x_need_change.to_numpy())
 
-            train_x_need_change = pd.DataFrame(train_x_scaled, index=train_x_need_change.index, columns=train_x_need_change.columns)
-            if test_x is not None:
-                test_x_need_change = pd.DataFrame(test_x_scaled, index=test_x_need_change.index, columns=test_x_need_change.columns)
+                train_x_need_change = pd.DataFrame(train_x_scaled, index=train_x_need_change.index, columns=train_x_need_change.columns)
+                if test_x is not None:
+                    test_x_need_change = pd.DataFrame(test_x_scaled, index=test_x_need_change.index, columns=test_x_need_change.columns)
 
             if self.tow_nominal_var_list != []:
                 train_x = train_x_need_change.merge(train_x.loc[:, self.tow_nominal_var_list],left_index=True,right_index=True)
                 if test_x is not None:
-                    test_x = train_x_need_change.merge(test_x.loc[:, self.tow_nominal_var_list],left_index=True,right_index=True)
+                    test_x = test_x_need_change.merge(test_x.loc[:, self.tow_nominal_var_list],left_index=True,right_index=True)
             else:
                 train_x = train_x_need_change
                 if test_x is not None:
-                    test_x = train_x_need_change
+                    test_x = test_x_need_change
 
 
         self.data["train_x"] = train_x
         self.data["test_x"] = test_x
 
-        qApp.main_window.log_te.append("\n" + "=" * 20 + self.parentWidget().class_name + "=" * 20)
+        print_log_header(self.parentWidget().class_name)
         if self.data["train_x"] is not None:
-            qApp.main_window.log_te.append("\n" + "train_x" + str(self.data["train_x"].shape))
+            print_to_log("\n" + "train_x" + str(self.data["train_x"].shape))
         if self.data["train_y"] is not None:
-            qApp.main_window.log_te.append("\n" + "train_y" + str(type(self.data["train_y"])))
+            print_to_log("\n" + "train_y" + str(type(self.data["train_y"])))
         if self.data["test_x"] is not None:
-            qApp.main_window.log_te.append("\n" + "test_x" + str(self.data["test_x"].shape))
+            print_to_log("\n" + "test_x" + str(self.data["test_x"].shape))
         if self.data["test_y"] is not None:
-            qApp.main_window.log_te.append("\n" + "test_y" + str(type(self.data["test_y"])))
+            print_to_log("\n" + "test_y" + str(type(self.data["test_y"])))
 
-        qApp.main_window.log_te.append("\n" + "0-1 columns :" + ", ".join(self.tow_nominal_var_list))
+        print_to_log("\n" + "0-1 columns :" + ", ".join(self.tow_nominal_var_list))
 
         if self.save_file_cb.checkState() and self.save_file_label.text() != "No Directory selected":
             if self.data["train_y"] is not None:

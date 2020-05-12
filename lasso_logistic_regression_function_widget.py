@@ -10,8 +10,8 @@ class Lasso_Logistic_Regression_Function_Widget(Function_Widget):
         self.class_name = "lasso_logistic_regression"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = []
-        self.allowed_previouse_num = 2
+        self.allowed_next_fun_widget_list = ["random_forest_classifier"]
+        self.allowed_previouse_num = 1
         self.allowed_next_num = 1
         self.data = None
         print("lasso_logistic_regression object name", self.objectName())
@@ -41,7 +41,7 @@ class Lasso_Logistic_Regression_Function_Widget(Function_Widget):
                     self.connected_dialog.data = self.data
                     self.connected_dialog.get_y_labels()
             else:
-                print("previous", self.previous_widgets[0].data["train_x"].shape, "data prepro",self.data["train_x"].shape)
+                print("previous", self.previous_widgets[0].data["train_x"].shape, "lasso logistic",self.data["train_x"].shape)
                 self.data = copy.deepcopy(self.previous_widgets[0].data)
                 self.connected_dialog.data = self.data
                 self.connected_dialog.get_y_labels()

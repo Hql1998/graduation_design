@@ -21,7 +21,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.function_widget_dict ={"file_reader":[],
                                     "deal_empty": [],
                                     "data_preprocessing": [],
-                                    "lasso_logistic_regression": []
+                                    "lasso_logistic_regression": [],
+                                    "random_forest_classifier": []
                                     }
 
     def setup_ui_subtle(self):
@@ -59,6 +60,12 @@ class Window(QMainWindow, Ui_MainWindow):
         llrfw.icon_btn.setText("LLRCV")
         llrfw.show()
         self.function_widget_dict[llrfw.class_name].append(llrfw)
+
+    def random_forest_classifier_btn_clicked_handler(self):
+        rfcfw = Random_Forest_Classifier_Function_Widget(self.draw_scroll_area_content)
+        rfcfw.icon_btn.setText("RFCCV")
+        rfcfw.show()
+        self.function_widget_dict[rfcfw.class_name].append(rfcfw)
 
 
     def status_initiate(self):

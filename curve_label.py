@@ -2,7 +2,7 @@ from PyQt5.Qt import *
 
 
 class Start_Label(QLabel):
-    def __init__(self,parent = None, *args, **kwargs):
+    def __init__(self,parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.not_find = True
         self.setup_ui()

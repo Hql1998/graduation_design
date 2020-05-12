@@ -252,6 +252,13 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_5">
+           <property name="text">
+            <string>Random Forest Classifier with CV</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="page_2">
@@ -259,8 +266,8 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>300</width>
-          <height>691</height>
+          <width>280</width>
+          <height>709</height>
          </rect>
         </property>
         <attribute name="label">
@@ -302,8 +309,8 @@ p, li { white-space: pre-wrap; }
    <slot>file_reader_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>204</y>
+     <x>108</x>
+     <y>194</y>
     </hint>
     <hint type="destinationlabel">
      <x>632</x>
@@ -318,8 +325,8 @@ p, li { white-space: pre-wrap; }
    <slot>deal_with_empty_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>343</y>
+     <x>150</x>
+     <y>315</y>
     </hint>
     <hint type="destinationlabel">
      <x>487</x>
@@ -334,8 +341,8 @@ p, li { white-space: pre-wrap; }
    <slot>drop_transform_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>486</y>
+     <x>184</x>
+     <y>436</y>
     </hint>
     <hint type="destinationlabel">
      <x>525</x>
@@ -350,12 +357,28 @@ p, li { white-space: pre-wrap; }
    <slot>lasso_logistic_regression_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>628</y>
+     <x>121</x>
+     <y>557</y>
     </hint>
     <hint type="destinationlabel">
      <x>460</x>
      <y>-7</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>random_forest_classifier_btn_clicked_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>846</y>
     </hint>
    </hints>
   </connection>
@@ -365,5 +388,6 @@ p, li { white-space: pre-wrap; }
   <slot>deal_with_empty_btn_clicked_handler()</slot>
   <slot>drop_transform_btn_clicked_handler()</slot>
   <slot>lasso_logistic_regression_btn_clicked_handler()</slot>
+  <slot>random_forest_classifier_btn_clicked_handler()</slot>
  </slots>
 </ui>

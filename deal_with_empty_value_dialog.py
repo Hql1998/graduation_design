@@ -1,5 +1,5 @@
 from GUI_part.deal_with_empty_value_ui import Ui_Deal_With_Empty_Dialog
-
+from print_to_log import *
 from function_widget import *
 import pandas as pd
 from numpy import nan
@@ -149,7 +149,7 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         self.data["test_x"] = test_x
         self.data["test_y"] = test_y
 
-        qApp.main_window.log_te.append("\n" + "=" * 10 + self.parentWidget().class_name + "=" * 10)
+        print_log_header(self.parentWidget().class_name)
         if train_x is not None:
             qApp.main_window.log_te.append("\n" + "train_x" + str(train_x.shape))
         if train_y is not None:

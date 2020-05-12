@@ -1,5 +1,5 @@
 from GUI_part.file_reader_dialog_ui import Ui_file_reader_dialog
-from PyQt5.Qt import *
+from print_to_log import *
 from function_widget import *
 import pandas as pd
 from numpy import nan
@@ -184,7 +184,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
 
 
         self.parentWidget().data={}
-        qApp.main_window.log_te.append("\n"+"="*10 + self.parentWidget().class_name + "="*10)
+        print_log_header(self.parentWidget().class_name)
 
         if self.set_target_cb.checkState():
 
@@ -230,7 +230,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         self.parentWidget().state_changed_handler("finish")
 
     def finish_handler(self):
-        print("finish")
+
         if self.parent().next_widgets != []:
             for next_widget in self.parent().next_widgets:
                 if next_widget.data is None:
