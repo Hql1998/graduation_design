@@ -22,7 +22,8 @@ class Window(QMainWindow, Ui_MainWindow):
                                     "deal_empty": [],
                                     "data_preprocessing": [],
                                     "lasso_logistic_regression": [],
-                                    "random_forest_classifier": []
+                                    "random_forest_classifier": [],
+                                    "svm_classifier": []
                                     }
 
     def setup_ui_subtle(self):
@@ -66,6 +67,12 @@ class Window(QMainWindow, Ui_MainWindow):
         rfcfw.icon_btn.setText("RFCCV")
         rfcfw.show()
         self.function_widget_dict[rfcfw.class_name].append(rfcfw)
+
+    def svm_classifier_btn_clicked_handler(self):
+        svmcfw = SVM_Classifier_Function_Widget(self.draw_scroll_area_content)
+        svmcfw.icon_btn.setText("SVMCV")
+        svmcfw.show()
+        self.function_widget_dict[svmcfw.class_name].append(svmcfw)
 
 
     def status_initiate(self):

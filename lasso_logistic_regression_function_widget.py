@@ -10,13 +10,12 @@ class Lasso_Logistic_Regression_Function_Widget(Function_Widget):
         self.class_name = "lasso_logistic_regression"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = ["random_forest_classifier"]
-        self.allowed_previouse_num = 1
+        self.allowed_next_fun_widget_list = ["random_forest_classifier", "svm_classifier"]
+        self.allowed_previouse_num = 2
         self.allowed_next_num = 1
         self.data = None
         print("lasso_logistic_regression object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
-        self.destroyed.connect(lambda obj: qApp.main_window.log_te.append("\n" + str(obj) + "lasso_logistic_regression Function_Widget deleted"))
 
 
     def icon_btn_double_clicked_handler(self):

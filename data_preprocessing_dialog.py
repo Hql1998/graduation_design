@@ -36,6 +36,7 @@ class Data_Preprocessing_Dialog(QDialog, Ui_data_preprocessing):
         self.tableWidget.setRowCount(data.shape[0])
         self.tableWidget.setColumnCount(data.shape[1])
         self.tableWidget.setHorizontalHeaderLabels(header_data)
+        self.tableWidget.setVerticalHeaderLabels([str(i) for i in data.index])
 
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):

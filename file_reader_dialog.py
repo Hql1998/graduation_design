@@ -29,7 +29,10 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         btn_group.addButton(self.without_test_cb, 3)
 
         self.load_test_from_cb.toggled.connect(self.load_test_handler)
-        self.split_test_fro_train_cb.toggled.connect(self.split_test_fro_train_cb_toggled_handler)
+        self.train_column_header_cb.toggled.connect(self.updata_train_header)
+        self.train_row_header_cb.toggled.connect(self.updata_train_header)
+        self.test_column_header_cb.toggled.connect(self.updata_test_header)
+        self.test_row_header_cb.toggled.connect(self.updata_test_header)
 
     def load_test_handler(self):
         checked = self.load_test_from_cb.checkState()
@@ -63,13 +66,28 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
     def read_test_data(self):
 
         self.parentWidget().state_changed_handler("processing")
+        if self.test_row_header_cb.checkState():
+            index_col = 0
+        else:
+            index_col = None
+        if self.test_column_header_cb.checkState():
+            header = 0
+        else:
+            header = None
         if self.open_test_file_btn.open_result[1] == "excel(*.xlsx)":
-            self.dataFrame_test_loaded = pd.read_excel(self.open_test_file_btn.open_result[0])
+            self.dataFrame_test_loaded = pd.read_excel(self.open_test_file_btn.open_result[0], header=header, index_col=index_col)
         elif self.open_test_file_btn.open_result[1] == "csv(*.csv)":
-            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0])
+            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0], header=header, index_col=index_col)
         elif self.open_test_file_btn.open_result[1] == "tsv(*.tsv)":
-            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0], sep="\t")
+            self.dataFrame_test_loaded = pd.read_csv(self.open_test_file_btn.open_result[0], sep="\t", header=header, index_col=index_col)
 
+    def updata_test_header(self):
+        if self.dataFrame_test_loaded is not None:
+            self.read_test_data()
+
+    def updata_train_header(self):
+        if self.dataFrame_train is not None:
+            self.open_train_file_btn_clicked_handler()
 
     def open_train_file_btn_clicked_handler(self):
         if self.open_train_file_btn.open_result[0] != "":
@@ -93,18 +111,24 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         if self.set_target_cb.checkState():
             self.display_table()
 
-    def split_test_fro_train_cb_toggled_handler(self):
-        pass
 
     def read_train_data(self):
 
         self.parentWidget().state_changed_handler("processing")
+        if self.train_row_header_cb.checkState():
+            index_col = 0
+        else:
+            index_col = None
+        if self.train_column_header_cb.checkState():
+            header = 0
+        else:
+            header = None
         if self.open_train_file_btn.open_result[1] == "excel(*.xlsx)":
-            self.dataFrame_train = pd.read_excel(self.open_train_file_btn.open_result[0])
+            self.dataFrame_train = pd.read_excel(self.open_train_file_btn.open_result[0], header=header, index_col=index_col)
         elif self.open_train_file_btn.open_result[1] == "csv(*.csv)":
-            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0])
+            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0], header=header, index_col=index_col)
         elif self.open_train_file_btn.open_result[1] == "tsv(*.tsv)":
-            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0], sep="\t")
+            self.dataFrame_train = pd.read_csv(self.open_train_file_btn.open_result[0], sep="\t", header=header, index_col=index_col)
 
     def display_table(self):
 
@@ -120,6 +144,7 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
         self.tableWidget.setRowCount(data.shape[0])
         self.tableWidget.setColumnCount(data.shape[1])
         self.tableWidget.setHorizontalHeaderLabels(header_data)
+        self.tableWidget.setVerticalHeaderLabels([str(i) for i in data.index])
 
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):

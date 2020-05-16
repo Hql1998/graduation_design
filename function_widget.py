@@ -3,6 +3,7 @@ from MyIconBtn import MyIconBtn
 from MyLeftBtn import MyLeftBtn
 from MyRightBtn import MyRightBtn
 from light_label import *
+from print_to_log import *
 
 
 
@@ -27,6 +28,7 @@ class Function_Widget(Dragable_Widget):
         self.connected_dialog = None
 
         self.setupUi()
+        self.destroyed.connect(lambda x: print_to_log(x, self.class_name, "were destroyed"))
 
     def setupUi(self):
         self.setStyleSheet("""
@@ -133,7 +135,11 @@ class Function_Widget(Dragable_Widget):
         if self.previous_widgets != []:
             for previous_widget in self.previous_widgets:
                 for curve in previous_widget.right_btn.curves:
-                    curve.end_label_moved_handler(previous_widget.right_btn.get_mid_pos().x()+20, previous_widget.right_btn.get_mid_pos().y()+20)
+                    if curve.end_label_function_widget is self:
+                        curve.end_label_moved_handler(previous_widget.right_btn.get_mid_pos().x()+20, previous_widget.right_btn.get_mid_pos().y()+20)
+                        curve.end_label_function_widget = None
+                        curve.raise_()
+                        previous_widget.present_next_num -= 1
                 try:
                     del previous_widget.next_widgets[previous_widget.next_widgets.index(self)]
                 except ValueError as e:

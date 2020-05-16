@@ -1,4 +1,4 @@
-from GUI_part.random_forest_classifier_ui import Ui_Dialog
+from GUI_part.svm_classifier_ui import Ui_SVM_Classifier_Dialog
 from PyQt5 import QtWidgets
 from PyQt5.Qt import QDialog, QErrorMessage, qErrnoWarning, QButtonGroup, QDoubleValidator, QValidator
 import pandas as pd
@@ -6,38 +6,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
 from sklearn.model_selection import RandomizedSearchCV,GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.svm import SVC
+from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from joblib import dump, load
 from print_to_log import *
-from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public, check_data_model_compatible_public
+from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public, check_data_model_compatible_public,read_data_multiclass_public,read_data_public
 
 
-class Validator01(QDoubleValidator):
-    def validate(self, input_text, pos):
-        status, input_text, pos = super().validate(input_text, pos)
-        if QValidator.Acceptable == status:
-            if 0<float(input_text)<1:
-                return (status, input_text, pos)
-            elif 0==float(input_text):
-                return (QValidator.Intermediate, input_text, pos)
-            else:
-                return (QValidator.Invalid, input_text, pos-1)
-        else:
-            return (status, input_text, pos)
 
-    def fixup(self, input_text):
-        return "0.0001"
-
-
-class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
+class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.setupUi(self)
         self.adjust_sbutile()
+
         self.data = {}
         self.cv_model = None
         self.best_estimator = None
@@ -48,16 +32,60 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
         self.save_file_later = False
         self.class_name = []
 
+        # read_data_public(self.data)
+        # read_data_multiclass_public(self.data)
+
+        # self.get_y_labels()
+        # self.apply_handler()
+
         self.parentWidget().state_changed_handler("start")
 
     def adjust_sbutile(self):
-        self.setStyleSheet("background:None;")
-
         btn_group = QButtonGroup(self)
         btn_group.addButton(self.random_search_cb)
         btn_group.addButton(self.grid_search_cb)
-        validator01 = Validator01()
-        self.feature_importance_le.setValidator(validator01)
+
+        self.setStyleSheet("background:None;")
+
+        self.load_model_cb.toggled['bool'].connect(self.load_model_cb_toggled_handler)
+        self.open_model_btn.clicked.connect(self.open_model_btn_clicked_handler)
+        self.save_file_cb.toggled['bool'].connect(self.save_file_cb_toggled_handler)
+        self.save_file_btn.clicked.connect(self.save_file_btn_clicked_handler)
+        self.save_model_cb.toggled['bool'].connect(self.save_model_cb_toggled_handler)
+        self.save_model_btn.clicked.connect(self.save_model_btn_clicked_handler)
+        self.apply_btn.clicked.connect(self.apply_handler)
+        self.finish_btn.clicked.connect(self.finish_handler)
+
+        self.linear_kernel_cb.toggled['bool'].connect(self.compat_kernels)
+        self.poly_kernel_cb.toggled['bool'].connect(self.compat_kernels)
+        self.rbf_kernel_cb.toggled['bool'].connect(self.compat_kernels)
+        self.sigmoid_kernel_cb.toggled['bool'].connect(self.compat_kernels)
+
+        self.rbf_kernel_cb.setChecked(False)
+        self.rbf_kernel_cb.setChecked(True)
+
+        self.balanced_class_weight_cb.setChecked(True)
+
+    def compat_kernels(self):
+        linear_flag = self.linear_kernel_cb.checkState()
+        poly_flag = self.poly_kernel_cb.checkState()
+        rbf_flag = self.rbf_kernel_cb.checkState()
+        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
+
+        if not poly_flag and not sigmoid_flag:
+            self.coef_group.setEnabled(False)
+        else:
+            self.coef_group.setEnabled(True)
+
+        if not poly_flag and not sigmoid_flag and not rbf_flag:
+            self.gamma_group.setEnabled(False)
+        else:
+            self.gamma_group.setEnabled(True)
+
+        if not poly_flag:
+            self.degree_group.setEnabled(False)
+        else:
+            self.degree_group.setEnabled(True)
 
     def get_y_labels(self):
         if self.data["train_y"] is not None:
@@ -70,7 +98,8 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             else:
                 self.multiclass = True
                 self.scoring_comb.clear()
-                self.scoring_comb.addItems(["accuracy", "roc_auc_ovr", "precision_micro", "recall_micro"])
+                self.scoring_comb.addItems(["accuracy",  "precision_micro", "recall_micro"])
+                self.scoring_comb.setCurrentIndex(1)
 
     def load_model_cb_toggled_handler(self):
         print("load_model clicked")
@@ -166,91 +195,107 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             # QErrorMessage.qtHandler()
             # qErrnoWarning("you don't have a trained model or ou didn't select the checkbox")
 
-    def feature_filter_toggled_handler(self):
-        if self.best_estimator is not None and self.best_estimator.n_features_ == self.data["train_x"].shape[1]:
-            self.transform_data()
+    def make_search_para_list(self):
+        linear_flag = self.linear_kernel_cb.checkState()
+        poly_flag = self.poly_kernel_cb.checkState()
+        rbf_flag = self.rbf_kernel_cb.checkState()
+        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
+        if not linear_flag and not poly_flag and not rbf_flag and not sigmoid_flag:
+            QErrorMessage.qtHandler()
+            qErrnoWarning("you didn't choose a kernel")
+            return True
+        if self.c_group.isEnabled():
+            c_start = self.c_start_sp.value()
+            c_end = self.c_end_sp.value()
+            c_num = self.c_num_sp.value()
+            c_list = np.logspace(start=c_start, stop=c_end, num=c_num, base=10)
+        if self.gamma_group.isEnabled():
+            gamma_start = self.gamma_start_sp.value()
+            gamma_end = self.gamma_end_sp.value()
+            gamma_num = self.gamma_num_sp.value()
+            gamma_list = np.logspace(start=gamma_start, stop=gamma_end, num=gamma_num, base=10)
+        if self.degree_group.isEnabled():
+            degree_start = self.degree_start_sp.value()
+            degree_end = self.degree_end_sp.value()
+            degree_num = self.degree_num_sp.value()
+            if degree_num > degree_end - degree_start+1:
+                degree_num = degree_end - degree_start+1
+            if degree_num == 0:
+                degree_list = None
+            else:
+                degree_list = np.linspace(start=degree_start, stop=degree_end, num=degree_num)
+
+        if self.coef_group.isEnabled():
+            coef_start = self.coef_start_sp.value()
+            coef_end = self.coef_end_sp.value()
+            coef_num = self.coef_num_sp.value()
+            coef_list = np.logspace(start=coef_start, stop=coef_end, num=coef_num, base=10)
+        grid_list = []
+        if linear_flag:
+            linear_grid = {'kernel': ['linear'], 'C': c_list}
+            grid_list.append(linear_grid)
+        if poly_flag:
+            if degree_list is None:
+                poly_grid = {'kernel': ['poly'],
+                             'gamma': gamma_list,
+                             'C': c_list}
+            else:
+                poly_grid = {'kernel': ['poly'],
+                             'gamma': gamma_list,
+                             'C': c_list,
+                             "degree":degree_list}
+            grid_list.append(poly_grid)
+        if rbf_flag:
+            rbf_grid = {'kernel': ['rbf'],
+                         'gamma': gamma_list,
+                         'C': c_list}
+            grid_list.append(rbf_grid)
+        if sigmoid_flag:
+            sigmoid_grid={'kernel': ['sigmoid'],
+                         'gamma': gamma_list,
+                         'C': c_list}
+            grid_list.append(sigmoid_grid)
+
+        return grid_list
 
     def train_a_model(self):
-        if self.data["train_y"] is not None:
-            print("you got a response variable")
-            train_x = self.data["train_x"]
-            train_y = self.data["train_y"]
 
-            tree_num_start = self.tree_num_start_sp.value()
-            tree_num_end = self.tree_end_end_sp.value()
-            tree_num = self.tree_num_sp.value()
+        train_x = self.data["train_x"]
+        train_y = self.data["train_y"]
 
-            feature_length = train_x.shape[1]
-            feature_prop_start = self.feature_prop_start_dsp.value() * feature_length
-            feature_prop_end = self.feature_prop_end_dsp.value() * feature_length
-            if feature_prop_end <= feature_prop_start:
-                return True
-            feature_prop_num = self.feature_prop_num_sp.value()
+        scoring = self.scoring_comb.currentText()
+        cv_folds = self.cv_folds_sp.value()
 
-            max_depth_start = self.max_depth_start_sp.value()
-            max_depth_end = self.max_depth_end_sp.value()
-            max_depth_num = self.max_depth_num_sp.value()
+        grid_parameters = self.make_search_para_list()
+        if grid_parameters is True:
+            return True
+        print(grid_parameters)
+        if self.balanced_class_weight_cb.checkState():
+            svc = SVC(class_weight= 'balanced')
+        else:
+            svc = SVC()
 
-            min_split_start = self.min_split_start_sp.value()
-            min_split_end = self.min_split_end_sp.value()
-            min_split_num = self.min_split_num_sp.value()
+        print("computing")
 
-            min_leaf_start = self.min_leaf_start_sp.value()
-            min_leaf_end = self.min_leaf_end_sp.value()
-            min_leaf_num = self.min_leaf_num_sp.value()
+        if self.random_search_cb.checkState():
+            random_cv = RandomizedSearchCV(estimator=svc, param_distributions=grid_parameters, cv=cv_folds, scoring=scoring, random_state=42) # n_iter=100,
+            random_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+            self.cv_model = random_cv
+        elif self.grid_search_cb.checkState():
+            grid_cv = GridSearchCV(estimator=svc, param_grid=grid_parameters, cv=cv_folds, scoring=scoring)
+            grid_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+            self.cv_model = grid_cv
+        print("training model finished")
 
-            scoring = self.scoring_comb.currentText()
-            cv_folds = self.cv_folds_sp.value()
-
-            n_estimators = [int(x) for x in np.linspace(start=tree_num_start, stop=tree_num_end, num=tree_num)]
-
-            max_features = np.array([int(x) for x in np.linspace(start=feature_prop_start, stop=feature_prop_end, num=feature_prop_num)])
-            max_features = max_features[max_features > 0]
-
-
-            max_depth = [int(x) for x in np.linspace(start=max_depth_start, stop=max_depth_end, num=max_depth_num)]
-            max_depth.append(None)
-            min_samples_split = np.array([int(x) for x in np.linspace(start=min_split_start, stop=min_split_end, num=min_split_num)])
-            min_samples_split = min_samples_split[min_samples_split < 0.5*train_x.shape[0]]
-            min_samples_leaf = np.array([int(x) for x in np.linspace(start=min_leaf_start, stop=min_leaf_end, num=min_leaf_num)])
-            min_samples_leaf = min_samples_leaf[min_samples_leaf < 0.5 * train_x.shape[0]]
-
-            grid_parameters = {'n_estimators': n_estimators,
-                           'max_features': max_features,
-                           'max_depth': max_depth,
-                           'min_samples_split': min_samples_split,
-                           'min_samples_leaf': min_samples_leaf}
-            print(grid_parameters)
-
-            if self.balanced_class_weight_cb.checkState():
-                rf = RandomForestClassifier(class_weight="balanced")
-            else:
-                rf = RandomForestClassifier()
-
-            print("computing")
-
-            if self.random_search_cb.checkState():
-                random_cv = RandomizedSearchCV(estimator=rf, param_distributions=grid_parameters, cv=cv_folds, scoring=scoring, random_state=42) # n_iter=100,
-                random_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-                self.cv_model = random_cv
-            elif self.grid_search_cb.checkState():
-                grid_cv = GridSearchCV(estimator=rf, param_grid=grid_parameters, cv=cv_folds, scoring=scoring)
-                grid_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-                self.cv_model = grid_cv
-            print("training model finished")
-
-            return False
+        return False
 
     def plot_ROC_just_curve(self, model_name, X, y):
         classifier = self.best_estimator
         color = {'Random Forest - test': 'darkgreen', 'Random Forest - train': 'darkblue'}
-        probas = classifier.predict_proba(X)
+        probas = classifier.decision_function(X)
         print("y_true", y.to_numpy().reshape(y.shape[0],).shape, "y_prob", probas.shape)
-        index = 1
-        for i in range(self.best_estimator.n_classes_):
-            if self.best_estimator.classes_[i] == 1:
-                index = i
-        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas[:,index])
+
+        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas)
         roc_auc = auc(fpr, tpr)
         print_to_tb(self.textBrowser,model_name + r' ROC (AUC: %0.2f)' % (roc_auc))
         plt.plot(fpr, tpr, color=color[model_name], label=model_name + r' ROC (AUC: %0.2f)' % (roc_auc), lw=2, alpha=.9)
@@ -277,10 +322,10 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
         classifier = self.best_estimator
         n_classes = len(classifier.classes_)
         if testing:
-            y_score = classifier.predict_proba(self.data["test_x"])
+            y_score = classifier.decision_function(self.data["test_x"])
             y = label_binarize(self.data["test_y"], classes=classifier.classes_)
         else:
-            y_score = classifier.predict_proba(self.data["train_x"])
+            y_score = classifier.decision_function(self.data["train_x"])
             y = label_binarize(self.data["train_y"], classes=classifier.classes_)
         # Compute ROC curve and ROC area for each class
         fpr = dict()
@@ -357,17 +402,12 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
 
         self.class_name = ["class " + str(i) for i in best_estimator.classes_]
         print(self.class_name)
-        if best_estimator.n_features_ != self.data["train_x"].shape[1]:
-            QErrorMessage.qtHandler()
-            qErrnoWarning("the data shape dosen't match the model")
-            return True
 
         print_tb_header(self.textBrowser, self.run_index)
         for key in cv_model.best_params_.keys():
             print_to_tb(self.textBrowser,key, cv_model.best_params_[key])
 
-        for index in range(best_estimator.n_features_):
-            print_to_tb(self.textBrowser,"the "+str(index+1)+" feature: ",self.data["train_x"].columns[index], best_estimator.feature_importances_[index])
+        print_to_tb(self.textBrowser, "support vectors at sample index:",str([i for i in best_estimator.support_]))
 
         print_to_tb(self.textBrowser, "best score during CV", cv_model.best_score_)
         if self.multiclass and self.plot_roc_cb.checkState():
@@ -382,20 +422,6 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
 
     def plot_confusion_matrix(self):
         plot_confusion_matrix_public(model=self.best_estimator, model_name="Random_Forest", data=self.data, class_name=self.class_name, run_index=self.run_index, have_test=self.have_test)
-
-    def transform_data(self):
-        threshold = float(self.feature_importance_le.text())
-        sfm = SelectFromModel(estimator=self.best_estimator, prefit=True, threshold=threshold)
-        self.data["train_x"] = pd.DataFrame(sfm.transform(self.data["train_x"]), index=self.data["train_x"].index, columns=self.data["train_x"].columns[sfm.get_support()])
-        print_to_tb(self.textBrowser, "number of finially selected features：", len(sfm.get_support()[sfm.get_support() == True]), "/", self.best_estimator.n_features_)
-        print_log_header(self.parentWidget().class_name)
-        print_to_log("train_x" + str(self.data["train_x"].shape))
-        print_to_log("train_y" + str(self.data["train_y"].shape))
-        if self.have_test:
-            self.data["test_x"] = pd.DataFrame(sfm.transform(self.data["test_x"]), index=self.data["test_x"].index,
-                                               columns=self.data["test_x"].columns[sfm.get_support()])
-            print_to_log("test_x" + str(self.data["test_x"].shape))
-            print_to_log("test_y" + str(self.data["test_y"].shape))
 
     def apply_handler(self):
 
@@ -413,7 +439,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             if self.train_a_model():
                 return None
 
-        if check_data_model_compatible_public(self.data, self.cv_model,"n_features_", cv=True):
+        if check_data_model_compatible_public(self.data, self.cv_model, "shape_fit_", cv=True):
             return None
 
         self.print_result()
@@ -426,9 +452,6 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
 
         if self.save_model_cb.checkState() and self.save_model_later:
             self.save_a_model()
-
-        if self.feature_filter_cb.checkState():
-            self.transform_data()
 
         if self.save_file_cb.checkState() and self.save_file_later:
             self.save_file()
@@ -448,7 +471,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Random_Forest_Classifier_Dialog()
-    Dialog.show()
+    self = SVM_Classifier_Dialog()
+    self.show()
     sys.exit(app.exec_())
 

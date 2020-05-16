@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>464</width>
-    <height>876</height>
+    <height>858</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Random Forest Classifier</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,0,0">
    <item>
     <widget class="QGroupBox" name="groupBox_1">
      <property name="title">
@@ -539,7 +539,7 @@
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>load Model</string>
+            <string>Load Model</string>
            </property>
           </widget>
          </item>
@@ -575,51 +575,13 @@
       <string>Out Parameters</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0" colspan="2">
+      <item row="0" column="0">
        <widget class="QCheckBox" name="plot_roc_cb">
         <property name="text">
          <string>Plot ROC on training and testing datsets</string>
         </property>
         <property name="checked">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="Save_Model_Btn" name="save_model_btn">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Save the Model</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="save_file_cb">
-        <property name="text">
-         <string>save transformed training (and testng) file(s) to</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="QCheckBox" name="save_model_cb">
-        <property name="text">
-         <string>save fitted model into</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="save_file_label">
-        <property name="text">
-         <string>No Directory selected</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1" alignment="Qt::AlignVCenter">
-       <widget class="QLabel" name="save_model_label">
-        <property name="text">
-         <string>No Directory selected</string>
         </property>
        </widget>
       </item>
@@ -633,17 +595,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="Save_File_Btn" name="save_file_btn">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Save the Files</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
+      <item row="1" column="1" colspan="2">
        <widget class="QCheckBox" name="output_confusion_cb">
         <property name="text">
          <string>Output confusion matrix</string>
@@ -653,13 +605,84 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="feature_filter_cb">
+        <property name="text">
+         <string>Only keep features with importance greater than </string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="save_file_cb">
+        <property name="text">
+         <string>Save (transformed) training (and testng) file(s) to</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="Save_File_Btn" name="save_file_btn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Save the Files</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QLabel" name="save_file_label">
+        <property name="text">
+         <string>No Directory selected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="save_model_cb">
+        <property name="text">
+         <string>Save fitted model into</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="Save_Model_Btn" name="save_model_btn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Save the Model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QLabel" name="save_model_label">
+        <property name="text">
+         <string>No Directory selected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="feature_importance_le">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>output field</string>
+      <string>Output field</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -732,11 +755,11 @@
    <slot>load_model_cb_toggled_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>69</x>
-     <y>380</y>
+     <x>98</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>469</x>
+     <x>463</x>
      <y>409</y>
     </hint>
    </hints>
@@ -748,8 +771,8 @@
    <slot>open_model_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>405</x>
-     <y>382</y>
+     <x>434</x>
+     <y>333</y>
     </hint>
     <hint type="destinationlabel">
      <x>461</x>
@@ -764,11 +787,11 @@
    <slot>save_file_cb_toggled_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>140</x>
-     <y>487</y>
+     <x>159</x>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
-     <x>468</x>
+     <x>463</x>
      <y>493</y>
     </hint>
    </hints>
@@ -780,11 +803,11 @@
    <slot>save_file_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>514</y>
+     <x>224</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
-     <x>488</x>
+     <x>463</x>
      <y>526</y>
     </hint>
    </hints>
@@ -796,11 +819,11 @@
    <slot>save_model_cb_toggled_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>194</x>
-     <y>538</y>
+     <x>213</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
-     <x>475</x>
+     <x>463</x>
      <y>546</y>
     </hint>
    </hints>
@@ -812,8 +835,8 @@
    <slot>save_model_btn_clicked_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>209</x>
-     <y>568</y>
+     <x>228</x>
+     <y>554</y>
     </hint>
     <hint type="destinationlabel">
      <x>463</x>
@@ -828,11 +851,11 @@
    <slot>apply_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>841</y>
+     <x>131</x>
+     <y>839</y>
     </hint>
     <hint type="destinationlabel">
-     <x>464</x>
+     <x>463</x>
      <y>721</y>
     </hint>
    </hints>
@@ -844,12 +867,28 @@
    <slot>finish_handler()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>378</x>
-     <y>849</y>
+     <x>445</x>
+     <y>839</y>
     </hint>
     <hint type="destinationlabel">
-     <x>509</x>
+     <x>463</x>
      <y>755</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>feature_filter_cb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Dialog</receiver>
+   <slot>feature_filter_toggled_handler()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>437</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>350</y>
     </hint>
    </hints>
   </connection>
@@ -863,5 +902,6 @@
   <slot>save_model_btn_clicked_handler()</slot>
   <slot>save_file_btn_clicked_handler()</slot>
   <slot>save_file_cb_toggled_handler()</slot>
+  <slot>feature_filter_toggled_handler()</slot>
  </slots>
 </ui>

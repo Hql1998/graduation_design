@@ -20,3 +20,9 @@ def print_log_header(class_name= "next function widget"):
     star_length = (total_length - len(class_name)) // 2
     string = "=" * star_length + class_name + "=" * star_length
     print_to_log(string)
+
+def print_tb_header(text_browser=None,run_num = 1):
+    header_text = "the "+str(run_num)+" run start"
+    total_length = 55
+    line_length = (55-len(header_text))//2
+    print_to_tb(text_browser, "=" * line_length, header_text, "=" * line_length)

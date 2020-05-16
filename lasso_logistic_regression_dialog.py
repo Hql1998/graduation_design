@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 from itertools import cycle
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import roc_curve, auc, classification_report, plot_confusion_matrix
+from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from joblib import dump, load
 from print_to_log import *
+from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public,check_data_model_compatible_public
 
 
 class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
@@ -20,7 +21,9 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         self.setupUi(self)
         # self.data = self.parentWidget().data
         self.data = {}
+        self.have_test = True
         self.LLRCV = None
+        self.run_index= 0
         self.multiclass = False
         self.save_model_later = False
         self.save_file_later = False
@@ -30,23 +33,6 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         self.setStyleSheet("background:None;")
 
         self.parentWidget().state_changed_handler("start")
-
-    def read_data(self):
-        self.data["train_x"] = pd.read_excel(r"E:\python\graduation_design\temp\balanced_train_data_preprocessing.xlsx").drop(columns="class")
-        self.data["test_x"] = pd.read_excel(r"E:\python\graduation_design\temp\balanced_test_data_preprocessing.xlsx").drop(columns="class")
-        self.data["train_y"] = pd.read_excel(
-            r"E:\python\graduation_design\temp\balanced_train_data_preprocessing.xlsx").loc[:,["class"]]
-        self.data["test_y"] = pd.read_excel(
-            r"E:\python\graduation_design\temp\balanced_test_data_preprocessing.xlsx").loc[:,["class"]]
-
-    def read_data_multiclass(self):
-        # , index_col=0
-        self.data["train_x"] = pd.read_excel(r"E:\python\graduation_design\temp\radio_train_data_preprocessing.xlsx").drop(columns="mutation_0forNo_1for19_2forL858R")
-        self.data["test_x"] = pd.read_excel(r"E:\python\graduation_design\temp\radio_test_data_preprocessing.xlsx").drop(columns="mutation_0forNo_1for19_2forL858R")
-        self.data["train_y"] = pd.read_excel(
-            r"E:\python\graduation_design\temp\radio_train_data_preprocessing.xlsx").loc[:,["mutation_0forNo_1for19_2forL858R"]]
-        self.data["test_y"] = pd.read_excel(
-            r"E:\python\graduation_design\temp\radio_test_data_preprocessing.xlsx").loc[:,["mutation_0forNo_1for19_2forL858R"]]
 
     def get_y_labels(self):
         if self.data["train_y"] is not None:
@@ -116,7 +102,7 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
     def save_a_model(self):
         model = self.LLRCV
         if self.save_model_label.text() != "No Directory selected" and self.save_model_cb.checkState() and model is not None:
-            file_path = self.save_model_btn.open_result[0]
+            file_path = self.save_model_btn.open_result[0].replace(".joblib", "self.parentWidget().class_name"+"_the_"+ str(self.run_index) + "_run"+".joblib")
             dump(model, file_path)
             self.save_model_later = False
         else:
@@ -144,13 +130,12 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
     def save_file(self):
 
         if self.save_file_label.text() != "No Directory selected" and self.save_file_cb.checkState() and self.transformed:
-            file_path = self.save_file_btn.open_result[0]
-            if self.save_file_btn.open_result[1] == "csv(*.csv)":
-                self.data["train_x"].merge(self.data["train_y"], left_index=True, right_index=True).to_csv(file_path.replace(".csv","_train_{0}.csv".format(self.parentWidget().class_name)))
-                self.data["test_x"].merge(self.data["test_y"], left_index=True, right_index=True).to_csv(file_path.replace(".csv", "_test_{0}.csv".format(self.parentWidget().class_name)))
-            elif self.save_file_btn.open_result[1] == "excel(*.xlsx)":
-                self.data["train_x"].merge(self.data["train_y"], left_index=True, right_index=True).to_excel(file_path.replace(".xlsx", "_train_{0}.xlsx".format(self.parentWidget().class_name)))
-                self.data["test_x"].merge(self.data["test_y"], left_index=True, right_index=True).to_excel(file_path.replace(".xlsx", "_test_{0}.xlsx".format(self.parentWidget().class_name)))
+            save_file_public(open_result=self.save_file_btn.open_result,
+                                data=self.data,
+                                have_test=self.have_test,
+                                widget_name=self.parentWidget().class_name,
+                                run_index=self.run_index)
+
             self.save_file_later = False
         else:
             self.save_file_later = True
@@ -196,11 +181,12 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
 
     def plot_ROC_lasso(self):
 
-        plt.figure(num = "Lasso logistic regression ROC", figsize=(5, 5))
+        plt.figure(num ="Lasso logistic regression ROC"+" the "+str(self.run_index)+" run", figsize=(5, 5))
 
         plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Random Chance', alpha=.8)
         self.plot_ROC_just_curve("Lasso logistic regression - train", self.data["train_x"], self.data["train_y"])
-        self.plot_ROC_just_curve("Lasso logistic regression - test", self.data["test_x"], self.data["test_y"])
+        if self.have_test:
+            self.plot_ROC_just_curve("Lasso logistic regression - test", self.data["test_x"], self.data["test_y"])
 
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
@@ -249,9 +235,9 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
 
         # Plot all ROC curves
         if testing:
-            plt.figure(num="ROC on testing dataset",figsize=(6,6))
+            plt.figure(num=" ROC on testing dataset"+" the "+str(self.run_index)+" run",figsize=(6,6))
         else:
-            plt.figure(num="ROC on training dataset",figsize=(6,6))
+            plt.figure(num=" ROC on training dataset"+" the "+str(self.run_index)+" run",figsize=(6,6))
         linewidth = 2
 
         if testing:
@@ -291,47 +277,41 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         plt.show(block=False)#block=False
 
     def print_result(self):
-        if self.LLRCV is not None:
-            LLRCV = self.LLRCV
-            self.class_name = ["class " + str(i) for i in self.LLRCV.classes_]
-            if len(LLRCV.coef_[0]) != len(self.data["train_x"].columns.values):
-                QErrorMessage.qtHandler()
-                qErrnoWarning("the data shape dosen't match the model")
-                return True
 
-            if self.multiclass:
-                print(LLRCV.C_)
-                print_to_tb(self.textBrowser, "=" * 25, "one run start", "=" * 25)
-                for i in range(len(LLRCV.coef_)):
-                    coef = LLRCV.coef_[i]
-                    for j in range(len(coef)):
-                        if coef[j] != 0:
-                            print_to_tb(self.textBrowser, self.class_name[i],
-                                        self.data["train_x"].columns.values[0:][j], coef[j])
-                    print_to_tb(self.textBrowser, self.class_name[i], "number of selected features：",len(coef[coef != 0]), "/", len(coef))
-                    print_to_tb(self.textBrowser, self.class_name[i], "model's C value: ", LLRCV.C_[i])
-                    print_to_tb(self.textBrowser, self.class_name[i], "model's interceprt: ", LLRCV.intercept_[i])
+        LLRCV = self.LLRCV
 
-                self.plot_ROC_multiclass(False)
+        self.class_name = ["class " + str(i) for i in self.LLRCV.classes_]
+        print_tb_header(text_browser=self.textBrowser, run_num=self.run_index)
+        if self.multiclass:
+            print(LLRCV.C_)
+            for i in range(len(LLRCV.coef_)):
+                coef = LLRCV.coef_[i]
+                for j in range(len(coef)):
+                    if coef[j] != 0:
+                        print_to_tb(self.textBrowser, self.class_name[i],
+                                    self.data["train_x"].columns.values[0:][j], coef[j])
+                print_to_tb(self.textBrowser, self.class_name[i], "number of selected features：",len(coef[coef != 0]), "/", len(coef))
+                print_to_tb(self.textBrowser, self.class_name[i], "model's C value: ", LLRCV.C_[i])
+                print_to_tb(self.textBrowser, self.class_name[i], "model's interceprt: ", LLRCV.intercept_[i])
+
+            self.plot_ROC_multiclass(False)
+            if self.have_test:
                 self.plot_ROC_multiclass(True)
-
-            else:
-                for i in range(len(LLRCV.coef_)):
-                    coef = LLRCV.coef_[i]
-                    print_to_tb(self.textBrowser, "=" * 25, "one run start", "=" * 25)
-                    for j in range(len(coef)):
-                        if coef[j] != 0:
-                            print_to_tb(self.textBrowser, self.data["train_x"].columns.values[0:][j], coef[j])
-                    print_to_tb(self.textBrowser, "number of non-zero features：", len(coef[coef != 0]), "/", len(coef))
-                    print_to_tb(self.textBrowser, "model's C value: ", LLRCV.C_[i])
-                    print_to_tb(self.textBrowser, "model's interceprt: ", LLRCV.intercept_[i])
-                self.plot_ROC_lasso()
         else:
-            QErrorMessage.qtHandler()
-            qErrnoWarning("you don't have a trained model")
+            for i in range(len(LLRCV.coef_)):
+                coef = LLRCV.coef_[i]
+                for j in range(len(coef)):
+                    if coef[j] != 0:
+                        print_to_tb(self.textBrowser, self.data["train_x"].columns.values[0:][j], coef[j])
+                print_to_tb(self.textBrowser, "number of non-zero features：", len(coef[coef != 0]), "/", len(coef))
+                print_to_tb(self.textBrowser, "model's C value: ", LLRCV.C_[i])
+                print_to_tb(self.textBrowser, "model's interceprt: ", LLRCV.intercept_[i])
+            self.plot_ROC_lasso()
+
 
     @staticmethod
     def crack(integer):
+
         start = int(np.ceil(np.sqrt(integer)))
         factor = integer / start
         factor = int(np.ceil(factor))
@@ -345,7 +325,7 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         best_c = model.C_[0]
         log_Cs = np.log10(model.Cs_)
         print("best c", best_c)
-        fig, (ax1, ax2) = plt.subplots(2, 1,num="Lasso Logstic Regression regularization profile", figsize=figsize)
+        fig, (ax1, ax2) = plt.subplots(2, 1,num=" Lasso Logstic Regression regularization profile"+" the "+str(self.run_index)+" run", figsize=figsize)
 
         std_score = model.scores_[1].transpose().std(axis=-1)
         mean_score = model.scores_[1].transpose().mean(axis=-1)
@@ -404,7 +384,7 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         log_Cs = np.log10(model.Cs_)
         row_num, col_num = self.crack(len(model.classes_) + 1)
         figsize = (5 * row_num, 4 * col_num)
-        fig, axs = plt.subplots(row_num, col_num, num="Lasso Logstic Regression regularization profile", figsize=figsize)
+        fig, axs = plt.subplots(row_num, col_num, num=" Lasso Logstic Regression regularization profile"+" the "+str(self.run_index)+" run", figsize=figsize)
 
         std_score = model.scores_[1].transpose().std(axis=-1)
         mean_score = model.scores_[1].transpose().mean(axis=-1)
@@ -421,9 +401,9 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         axs[0, 0].plot(log_Cs, higher, 'b--')
         axs[0, 0].plot(log_Cs, lower, 'b--')
         axs[0, 0].fill_between(log_Cs, higher, lower, alpha=0.2)
-
-        # axs[0, 0].axvline(-np.log10(best_c), linestyle='--', color='k',
-        #                   label='alpha: CV estimate {0}'.format(round(best_c, 4)))
+        if model.C_[0] == model.C_[1] == model.C_[2]:
+            axs[0, 0].axvline(-np.log10(model.C_[0]), linestyle='--', color='k',
+                          label='alpha: CV estimate {0}'.format(round(model.C_[0], 4)))
         axs[0, 0].set(xlim=[min(log_Cs), max(log_Cs)])
         axs[0, 0].legend(prop={'size': 8}, loc="upper right")
         axs[0, 0].set_xlabel(xlabel='Log10(C)', fontsize=7)
@@ -463,59 +443,45 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
 
         if self.LLRCV is None:
             return
-        train_y = self.data["train_y"]
-        train_y_pre = self.LLRCV.predict(self.data["train_x"])
-        train_resut_string = classification_report(train_y, train_y_pre, target_names=self.class_name)
-        print_to_tb(self.textBrowser, "*"*10 + "\ntraining set: \n" + train_resut_string)
-        test_y = self.data["test_y"]
-        test_y_pre = self.LLRCV.predict(self.data["test_x"])
-        test_resut_string = classification_report(test_y, test_y_pre, target_names=self.class_name)
-        print_to_tb(self.textBrowser, "*" * 10 + "\ntesting set: \n" + test_resut_string)
+        print_classification_report_public(model=self.LLRCV, data=self.data, class_name=self.class_name, textBrowser=self.textBrowser, have_test=self.have_test)
+
 
     def plot_confusion_matrix(self):
-        train_disp = plot_confusion_matrix(self.LLRCV, self.data["train_x"], self.data["train_y"],
-                                     display_labels=self.class_name,
-                                     cmap=plt.cm.Oranges)
-        train_disp.figure_.canvas.set_window_title('confusion matrix on training set')
-        train_disp.ax_.set_title("confusion matrix on training set")
-
-        test_disp = plot_confusion_matrix(self.LLRCV, self.data["test_x"], self.data["test_y"],
-                                           display_labels=self.class_name,
-                                           cmap=plt.cm.Oranges)
-        test_disp.figure_.canvas.set_window_title('confusion matrix on testing set')
-        test_disp.ax_.set_title("confusion matrix on testing set")
-
-        plt.show(block=False)
+        plot_confusion_matrix_public(model=self.LLRCV, model_name="Lasso Logistic Regression", data=self.data, class_name=self.class_name, run_index=self.run_index, have_test=self.have_test)
 
     def transform_data(self):
         sfm = SelectFromModel(estimator=self.LLRCV, prefit=True)
         self.data["train_x"] = pd.DataFrame(sfm.transform(self.data["train_x"]), index=self.data["train_x"].index, columns=self.data["train_x"].columns[sfm.get_support()])
-        self.data["test_x"] = pd.DataFrame(sfm.transform(self.data["test_x"]), index=self.data["test_x"].index, columns=self.data["test_x"].columns[sfm.get_support()])
         self.transformed = True
         print_to_tb(self.textBrowser, "number of finially selected features：", len(sfm.get_support()[sfm.get_support() == True]), "/", len(self.LLRCV.coef_[0]))
         print_log_header(self.parentWidget().class_name)
         print_to_log("train_x" + str(self.data["train_x"].shape))
         print_to_log("train_y" + str(self.data["train_y"].shape))
-        print_to_log("test_x" + str(self.data["test_x"].shape))
-        print_to_log("test_y" + str(self.data["test_y"].shape))
+        if self.have_test:
+            self.data["test_x"] = pd.DataFrame(sfm.transform(self.data["test_x"]), index=self.data["test_x"].index, columns=self.data["test_x"].columns[sfm.get_support()])
+            print_to_log("test_x" + str(self.data["test_x"].shape))
+            print_to_log("test_y" + str(self.data["test_y"].shape))
 
     def apply_handler(self):
 
         self.parentWidget().state_changed_handler("processing")
 
-        if self.data["test_y"] is None:
-            QErrorMessage.qtHandler()
-            qErrnoWarning("you didn't have a testing or target label")
+        no_y_flag, self.have_test = check_data_public(self.data)
+        if no_y_flag:
             self.parentWidget().state_changed_handler("unprepared")
             return
+
+        self.run_index += 1
 
         if self.load_model_cb.checkState():
             pass
         else:
             self.train_a_model()
 
-        if self.print_result():
+        if check_data_model_compatible_public(self.data, self.LLRCV, "coef_", cv=False):
             return None
+
+        self.print_result()
 
         if self.plot_lasso_cb.checkState():
             if len(self.LLRCV.classes_)>2:

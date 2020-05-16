@@ -17,7 +17,7 @@
    <string notr="true">background: None;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+   <item alignment="Qt::AlignVCenter">
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
@@ -28,37 +28,50 @@
      <property name="title">
       <string>Training Files</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0" colspan="2">
        <widget class="Open_File_Btn" name="open_train_file_btn">
         <property name="text">
          <string>Open Training File</string>
         </property>
        </widget>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label">
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>Traing File Name: </string>
-          </property>
-         </widget>
-        </item>
-        <item alignment="Qt::AlignVCenter">
-         <widget class="QLabel" name="display_train_file_name_label">
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>No File Selected</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <item row="1" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>Traing File Name: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QLabel" name="display_train_file_name_label">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>No File Selected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QCheckBox" name="train_column_header_cb">
+        <property name="text">
+         <string>with column header at first row</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+       <widget class="QCheckBox" name="train_row_header_cb">
+        <property name="text">
+         <string>with row label at first column</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -153,6 +166,16 @@
          <string>independent testing file</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="1">
+          <widget class="QLabel" name="display_test_file_name_label">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>No File Selcted</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QCheckBox" name="load_test_from_cb">
            <property name="enabled">
@@ -160,16 +183,6 @@
            </property>
            <property name="text">
             <string>load testing file from</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="Open_File_Btn" name="open_test_file_btn">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Open File</string>
            </property>
           </widget>
          </item>
@@ -183,13 +196,30 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="display_test_file_name_label">
-           <property name="styleSheet">
-            <string notr="true"/>
+         <item row="0" column="1">
+          <widget class="Open_File_Btn" name="open_test_file_btn">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
            <property name="text">
-            <string>No File Selcted</string>
+            <string>Open File</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QCheckBox" name="test_column_header_cb">
+           <property name="text">
+            <string>with column header at first row</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QCheckBox" name="test_row_header_cb">
+           <property name="text">
+            <string>with row label at first column</string>
            </property>
           </widget>
          </item>

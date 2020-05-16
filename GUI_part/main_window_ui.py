@@ -114,6 +114,9 @@ class Ui_MainWindow(object):
         self.pushButton_5 = QtWidgets.QPushButton(self.page)
         self.pushButton_5.setObjectName("pushButton_5")
         self.verticalLayout_2.addWidget(self.pushButton_5)
+        self.pushButton_6 = QtWidgets.QPushButton(self.page)
+        self.pushButton_6.setObjectName("pushButton_6")
+        self.verticalLayout_2.addWidget(self.pushButton_6)
         self.toolBox.addItem(self.page, "")
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setGeometry(QtCore.QRect(0, 0, 280, 709))
@@ -141,6 +144,7 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(MainWindow.drop_transform_btn_clicked_handler)
         self.pushButton_2.clicked.connect(MainWindow.lasso_logistic_regression_btn_clicked_handler)
         self.pushButton_5.clicked.connect(MainWindow.random_forest_classifier_btn_clicked_handler)
+        self.pushButton_6.clicked.connect(MainWindow.svm_classifier_btn_clicked_handler)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -162,6 +166,7 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "Drop & Transform & Standarization"))
         self.pushButton_2.setText(_translate("MainWindow", "Lasso Logistic Regression with CV"))
         self.pushButton_5.setText(_translate("MainWindow", "Random Forest Classifier with CV"))
+        self.pushButton_6.setText(_translate("MainWindow", "SVM Classifier with CV"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("MainWindow", "Frequent Use"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("MainWindow", "Standard Library"))
         self.actionopen_file.setText(_translate("MainWindow", "open file"))

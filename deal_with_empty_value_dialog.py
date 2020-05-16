@@ -18,6 +18,8 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
 
         self.setupUi(self)
         self.update_data()
+        self.parentWidget().state_changed_handler("start")
+
 
     def counting_empty(self):
         empty_num = self.data["train_x"].isnull().values.sum()
@@ -42,6 +44,7 @@ class Deal_With_Empty_Dialog(QDialog, Ui_Deal_With_Empty_Dialog):
         self.tableWidget.setRowCount(data.shape[0])
         self.tableWidget.setColumnCount(data.shape[1])
         self.tableWidget.setHorizontalHeaderLabels(header_data)
+        self.tableWidget.setVerticalHeaderLabels([str(i) for i in data.index])
 
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):

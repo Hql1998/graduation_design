@@ -14,7 +14,6 @@ class Data_Preprocessing_Function_Widget(Function_Widget):
         self.data = None
         print("data_preprocssing object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
-        self.destroyed.connect(lambda obj: qApp.main_window.log_te.append("\n" + str(obj) + "data preprocessing Function_Widget deleted"))
 
 
     def icon_btn_double_clicked_handler(self):
