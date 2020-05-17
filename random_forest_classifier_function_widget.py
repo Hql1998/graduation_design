@@ -10,7 +10,7 @@ class Random_Forest_Classifier_Function_Widget(Function_Widget):
         self.class_name = "random_forest_classifier"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = ["svm_classifier", "lasso_logistic_regression"]
+        self.allowed_next_fun_widget_list = ["svm_classifier", "lasso_logistic_regression", "naive_bayes_classifier", "knn_classifier"]
         self.allowed_previouse_num = 1
         self.allowed_next_num = 1
         self.data = None

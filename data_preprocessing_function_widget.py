@@ -10,7 +10,7 @@ class Data_Preprocessing_Function_Widget(Function_Widget):
         self.class_name = "data_preprocessing"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = ["lasso_logistic_regression", "random_forest_classifier"]
+        self.allowed_next_fun_widget_list = ["lasso_logistic_regression", "random_forest_classifier", "svm_classifier", "naive_bayes_classifier", "knn_classifier"]
         self.data = None
         print("data_preprocssing object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)

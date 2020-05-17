@@ -1,12 +1,12 @@
-from GUI_part.svm_classifier_ui import Ui_SVM_Classifier_Dialog
+from GUI_part.naive_bayes_classifier_ui import Ui_Naive_Bayes_Dialog
 from PyQt5 import QtWidgets
-from PyQt5.Qt import QDialog, QErrorMessage, qErrnoWarning, QButtonGroup
+from PyQt5.Qt import QDialog, QErrorMessage, qErrnoWarning
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
-from sklearn.model_selection import RandomizedSearchCV,GridSearchCV
-from sklearn.svm import SVC
+from sklearn.base import BaseEstimator
+from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from joblib import dump, load
@@ -14,8 +14,85 @@ from print_to_log import *
 from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public, check_data_model_compatible_public,read_data_multiclass_public,read_data_public
 
 
+class mixed_Naive_Bayes(BaseEstimator):
+    def __init__(self, multinomial_var_list=[], bernoulli_var_list=[], gaussian_var_list=[]):
+        self._estimator_type = "classifier"
+        self.multinomial_var_list = multinomial_var_list
+        self.bernoulli_var_list = bernoulli_var_list
+        self.gaussian_var_list = gaussian_var_list
+        self.fitted = False
+        self.n_features_ = 0
+        self.gnb = None
+        self.bnb = None
+        self.mnb = None
+        self.classes_ = None
 
-class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
+    def fit(self, X, y):
+
+        if self.gaussian_var_list != []:
+            gaussian_x = X[self.gaussian_var_list]
+            self.gnb = GaussianNB()
+            self.gnb.fit(gaussian_x, y)
+            self.classes_ = self.gnb.classes_
+
+        if self.bernoulli_var_list != []:
+            bernoulli_x = X[self.bernoulli_var_list]
+            self.bnb = BernoulliNB()
+            self.bnb.fit(bernoulli_x, y)
+            self.classes_ = self.bnb.classes_
+
+        if self.multinomial_var_list != []:
+            multinomial_x = X[self.multinomial_var_list]
+            self.mnb = MultinomialNB()
+            self.mnb.fit(multinomial_x, y)
+            self.classes_ = self.mnb.classes_
+
+        self.n_features_ = X.shape[1]
+        self.fitted = True
+        return self
+
+    def predict(self, X):
+
+        prob_mean = self.predict_proba(X)
+        # [np.argmax(i) for i in prob_mean[:, :]]
+        y = [self.classes_[np.argmax(i)] for i in prob_mean[:, :]]
+
+        return y
+
+    def predict_proba(self, X):
+        if self.fitted:
+            prob_list = []
+            if self.gaussian_var_list != []:
+                gaussian_x = X[self.gaussian_var_list]
+                gnb_proba = self.gnb.predict_proba(gaussian_x)
+                prob_list.append(gnb_proba)
+
+            if self.bernoulli_var_list != []:
+                bernoulli_x = X[self.bernoulli_var_list]
+                bnb_proba = self.bnb.predict_proba(bernoulli_x)
+                prob_list.append(bnb_proba)
+
+            if self.multinomial_var_list != []:
+                multinomial_x = X[self.multinomial_var_list]
+                mnb_proba = self.mnb.predict_proba(multinomial_x)
+                prob_list.append(mnb_proba)
+
+            prob_mean = np.array(prob_list[0])
+            for i in range(prob_mean.shape[1]):
+                prob_mean[:, i] = np.array([j[:, i] for j in prob_list]).mean(axis=0)
+
+            return prob_mean
+
+class My_Gaussian_Naive_Bayes(GaussianNB):
+    def __init__(self, multinomial_var_list=[], bernoulli_var_list=[], gaussian_var_list=[]):
+        super().__init__()
+        self.n_features_ = 0
+
+    def fit(self, X, y):
+        self.n_features_ = X.shape[1]
+        return super().fit(X, y)
+
+class Naive_Bayes_Classifier_Dialog(QDialog, Ui_Naive_Bayes_Dialog):
 
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -41,9 +118,6 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         self.parentWidget().state_changed_handler("start")
 
     def adjust_sbutile(self):
-        btn_group = QButtonGroup(self)
-        btn_group.addButton(self.random_search_cb)
-        btn_group.addButton(self.grid_search_cb)
 
         self.setStyleSheet("background:None;")
 
@@ -56,36 +130,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         self.apply_btn.clicked.connect(self.apply_handler)
         self.finish_btn.clicked.connect(self.finish_handler)
 
-        self.linear_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.poly_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.rbf_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.sigmoid_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-
-        self.rbf_kernel_cb.setChecked(False)
-        self.rbf_kernel_cb.setChecked(True)
-
-        self.balanced_class_weight_cb.setChecked(True)
-
-    def compat_kernels(self):
-        linear_flag = self.linear_kernel_cb.checkState()
-        poly_flag = self.poly_kernel_cb.checkState()
-        rbf_flag = self.rbf_kernel_cb.checkState()
-        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
-
-        if not poly_flag and not sigmoid_flag:
-            self.coef_group.setEnabled(False)
-        else:
-            self.coef_group.setEnabled(True)
-
-        if not poly_flag and not sigmoid_flag and not rbf_flag:
-            self.gamma_group.setEnabled(False)
-        else:
-            self.gamma_group.setEnabled(True)
-
-        if not poly_flag:
-            self.degree_group.setEnabled(False)
-        else:
-            self.degree_group.setEnabled(True)
+        # self.multinomial_distribute_rb.setChecked(True)
 
     def get_y_labels(self):
         if self.data["train_y"] is not None:
@@ -93,13 +138,8 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             unique_y = y_series.value_counts().shape[0]
             if unique_y <= 2:
                 self.multiclass = False
-                self.scoring_comb.clear()
-                self.scoring_comb.addItems(["accuracy", "roc_auc", "precision", "recall"])
             else:
                 self.multiclass = True
-                self.scoring_comb.clear()
-                self.scoring_comb.addItems(["accuracy",  "precision_micro", "recall_micro"])
-                self.scoring_comb.setCurrentIndex(1)
 
     def load_model_cb_toggled_handler(self):
         print("load_model clicked")
@@ -128,7 +168,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
     def load_a_model(self):
         if self.display_model_name_label.text() != "No Directory selected" and self.load_model_cb.checkState():
             file_path = self.open_model_btn.open_result[0]
-            self.cv_model = load(file_path)
+            self.model = load(file_path)
         else:
             QErrorMessage.qtHandler()
             qErrnoWarning("you didn't select the checkbox or a valid file")
@@ -154,7 +194,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             self.save_model_btn.setEnabled(False)
 
     def save_a_model(self):
-        model = self.cv_model
+        model = self.model
         if self.save_model_label.text() != "No Directory selected" and self.save_model_cb.checkState() and model is not None:
             file_path = self.save_model_btn.open_result[0]
             dump(model, file_path)
@@ -195,107 +235,106 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             # QErrorMessage.qtHandler()
             # qErrnoWarning("you don't have a trained model or ou didn't select the checkbox")
 
-    def make_search_para_list(self):
-        linear_flag = self.linear_kernel_cb.checkState()
-        poly_flag = self.poly_kernel_cb.checkState()
-        rbf_flag = self.rbf_kernel_cb.checkState()
-        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
-        if not linear_flag and not poly_flag and not rbf_flag and not sigmoid_flag:
-            QErrorMessage.qtHandler()
-            qErrnoWarning("you didn't choose a kernel")
-            return True
-        if self.c_group.isEnabled():
-            c_start = self.c_start_sp.value()
-            c_end = self.c_end_sp.value()
-            c_num = self.c_num_sp.value()
-            c_list = np.logspace(start=c_start, stop=c_end, num=c_num, base=10)
-        if self.gamma_group.isEnabled():
-            gamma_start = self.gamma_start_sp.value()
-            gamma_end = self.gamma_end_sp.value()
-            gamma_num = self.gamma_num_sp.value()
-            gamma_list = np.logspace(start=gamma_start, stop=gamma_end, num=gamma_num, base=10)
-        if self.degree_group.isEnabled():
-            degree_start = self.degree_start_sp.value()
-            degree_end = self.degree_end_sp.value()
-            degree_num = self.degree_num_sp.value()
-            if degree_num > degree_end - degree_start+1:
-                degree_num = degree_end - degree_start+1
-            if degree_num == 0:
-                degree_list = None
-            else:
-                degree_list = np.linspace(start=degree_start, stop=degree_end, num=degree_num)
+    def transform_accrod_to_type(self):
+        train_x = self.data["train_x"]
+        train_y = self.data["train_y"]
 
-        if self.coef_group.isEnabled():
-            coef_start = self.coef_start_sp.value()
-            coef_end = self.coef_end_sp.value()
-            coef_num = self.coef_num_sp.value()
-            coef_list = np.logspace(start=coef_start, stop=coef_end, num=coef_num, base=10)
-        grid_list = []
-        if linear_flag:
-            linear_grid = {'kernel': ['linear'], 'C': c_list}
-            grid_list.append(linear_grid)
-        if poly_flag:
-            if degree_list is None:
-                poly_grid = {'kernel': ['poly'],
-                             'gamma': gamma_list,
-                             'C': c_list}
-            else:
-                poly_grid = {'kernel': ['poly'],
-                             'gamma': gamma_list,
-                             'C': c_list,
-                             "degree":degree_list}
-            grid_list.append(poly_grid)
-        if rbf_flag:
-            rbf_grid = {'kernel': ['rbf'],
-                         'gamma': gamma_list,
-                         'C': c_list}
-            grid_list.append(rbf_grid)
-        if sigmoid_flag:
-            sigmoid_grid={'kernel': ['sigmoid'],
-                         'gamma': gamma_list,
-                         'C': c_list}
-            grid_list.append(sigmoid_grid)
+        self.multinomial_var_list = []
+        self.bernoulli_var_list = []
+        self.gaussian_var_list = []
 
-        return grid_list
+        for col in train_x.columns:
+            if len(train_x[col].unique().tolist()) == 2:
+                self.bernoulli_var_list.append(col)
+            elif len(train_x[col].unique().tolist()) > 2:
+                data_type = train_x[col].dtype
+
+                if data_type == np.int_ or data_type == np.int64:
+                    self.multinomial_var_list.append(col)
+                else:
+                    self.gaussian_var_list.append(col)
+
+        print(self.multinomial_var_list)
+
+        if self.gaussian_distribute_rb.isChecked():
+            gaussian_x = train_x[self.gaussian_var_list]
+            if gaussian_x.shape[1] != train_x.shape[1]:
+                QErrorMessage.qtHandler()
+                qErrnoWarning(
+                    "some data may  be droped due to data type dosen't fit,keeped feature has length of {0},you may choose auto mode".format(
+                        len(self.gaussian_var_list)))
+            self.data["train_x"] = gaussian_x
+            if self.have_test:
+                self.data["test_x"] = self.data["test_x"][self.gaussian_var_list]
+
+        elif self.multinomial_distribute_rb.isChecked():
+            multinomial_x = train_x[self.multinomial_var_list]
+            if multinomial_x.shape[1] != train_x.shape[1]:
+                QErrorMessage.qtHandler()
+                qErrnoWarning(
+                    "some data may  be droped due to data type dosen't fit,keeped feature has length of {0},you may choose auto mode".format(
+                        len(self.multinomial_var_list)))
+            self.data["train_x"] = multinomial_x
+            if self.have_test:
+                self.data["test_x"] = self.data["test_x"][self.multinomial_var_list]
+
+        elif self.bernoulli_distribute_rb.isChecked():
+            bernoulli_x = train_x[self.bernoulli_var_list]
+            if bernoulli_x.shape[1] != train_x.shape[1]:
+                QErrorMessage.qtHandler()
+                qErrnoWarning(
+                    "some data may  be droped due to data type dosen't fit,keeped feature has length of {0},you may choose auto mode".format(
+                        len(self.bernoulli_var_list)))
+            self.data["train_x"] = bernoulli_x
+            if self.have_test:
+                self.data["test_x"] = self.data["test_x"][self.bernoulli_var_list]
 
     def train_a_model(self):
 
         train_x = self.data["train_x"]
         train_y = self.data["train_y"]
 
-        scoring = self.scoring_comb.currentText()
-        cv_folds = self.cv_folds_sp.value()
-
-        grid_parameters = self.make_search_para_list()
-        if grid_parameters is True:
-            return True
-        print(grid_parameters)
-        if self.balanced_class_weight_cb.checkState():
-            svc = SVC(class_weight= 'balanced')
-        else:
-            svc = SVC()
-
+        model = None
         print("computing")
 
-        if self.random_search_cb.checkState():
-            random_cv = RandomizedSearchCV(estimator=svc, param_distributions=grid_parameters, cv=cv_folds, scoring=scoring, random_state=42) # n_iter=100,
-            random_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-            self.cv_model = random_cv
-        elif self.grid_search_cb.checkState():
-            grid_cv = GridSearchCV(estimator=svc, param_grid=grid_parameters, cv=cv_folds, scoring=scoring)
-            grid_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-            self.cv_model = grid_cv
-        print("training model finished")
+        if self.auto_distribute_rb.isChecked():
+            mix_nb = mixed_Naive_Bayes(self.multinomial_var_list, self.bernoulli_var_list, self.gaussian_var_list)
+            model = mix_nb.fit(train_x, train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+        else:
+            if self.gaussian_distribute_rb.isChecked() and len(self.gaussian_var_list) > 0:
+                gnb = My_Gaussian_Naive_Bayes()
+                model = gnb.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+            elif self.multinomial_distribute_rb.isChecked() and len(self.multinomial_var_list) > 0:
+                mnb = MultinomialNB()
+                model = mnb.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
 
+            elif self.bernoulli_distribute_rb.isChecked() and len(self.bernoulli_var_list) > 0:
+                bnb = BernoulliNB()
+                model = bnb.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+
+        if model:
+            self.model = model
+            print_log_header("Naive Bayes Classifier")
+            print_to_log("train x's shape is {0}".format(self.data["train_x"].shape))
+            print_to_log("train y's shape is {0}".format(self.data["train_y"].shape))
+            if self.have_test:
+                print_to_log("test x's shape is {0}".format(self.data["test_x"].shape))
+                print_to_log("test y's shape is {0}".format(self.data["test_y"].shape))
+        else:
+            QErrorMessage.qtHandler()
+            qErrnoWarning("you didn't select a model when training")
+            return True
+
+        print("training model finished")
         return False
 
     def plot_ROC_just_curve(self, model_name, X, y):
         classifier = self.model
-        color = {'SVM - test': 'darkgreen', 'SVM - train': 'darkblue'}
-        probas = classifier.decision_function(X)
+        color = {'Naive Bayes - test': 'darkgreen', 'Naive Bayes - train': 'darkblue'}
+        probas = classifier.predict_proba(X)
         print("y_true", y.to_numpy().reshape(y.shape[0],).shape, "y_prob", probas.shape)
 
-        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas)
+        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas[:,1])
         roc_auc = auc(fpr, tpr)
         print_to_tb(self.textBrowser,model_name + r' ROC (AUC: %0.2f)' % (roc_auc))
         plt.plot(fpr, tpr, color=color[model_name], label=model_name + r' ROC (AUC: %0.2f)' % (roc_auc), lw=2, alpha=.9)
@@ -303,12 +342,12 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
     def plot_ROC(self):
 
-        plt.figure(num = "SVM Classifier ROC"+" the "+str(self.run_index)+" run", figsize=(5, 5))
+        plt.figure(num = "Naive Bayes Classifier ROC"+" the "+str(self.run_index)+" run", figsize=(5, 5))
 
         plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Random Chance', alpha=.8)
-        self.plot_ROC_just_curve("SVM - train", self.data["train_x"], self.data["train_y"])
+        self.plot_ROC_just_curve("Naive Bayes - train", self.data["train_x"], self.data["train_y"])
         if self.have_test:
-            self.plot_ROC_just_curve("SVM - test", self.data["test_x"], self.data["test_y"])
+            self.plot_ROC_just_curve("Naive Bayes - test", self.data["test_x"], self.data["test_y"])
 
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
@@ -322,10 +361,10 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         classifier = self.model
         n_classes = len(classifier.classes_)
         if testing:
-            y_score = classifier.decision_function(self.data["test_x"])
+            y_score = classifier.predict_proba(self.data["test_x"])
             y = label_binarize(self.data["test_y"], classes=classifier.classes_)
         else:
-            y_score = classifier.decision_function(self.data["train_x"])
+            y_score = classifier.predict_proba(self.data["train_x"])
             y = label_binarize(self.data["train_y"], classes=classifier.classes_)
         # Compute ROC curve and ROC area for each class
         fpr = dict()
@@ -396,20 +435,13 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
     def print_result(self):
 
-        cv_model = self.cv_model
-        self.model = cv_model.best_estimator_
         best_estimator = self.model
 
         self.class_name = ["class " + str(i) for i in best_estimator.classes_]
         print(self.class_name)
 
         print_tb_header(self.textBrowser, self.run_index)
-        for key in cv_model.best_params_.keys():
-            print_to_tb(self.textBrowser,key, cv_model.best_params_[key])
 
-        print_to_tb(self.textBrowser, "support vectors at sample index:",str([i for i in best_estimator.support_]))
-
-        print_to_tb(self.textBrowser, "best score during CV", cv_model.best_score_)
         if self.multiclass and self.plot_roc_cb.checkState():
             self.plot_ROC_multiclass(False)
             if self.have_test:
@@ -433,15 +465,16 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             return
 
         self.run_index += 1
+        self.transform_accrod_to_type()
+
         if self.load_model_cb.checkState():
             pass
         else:
             if self.train_a_model():
                 return None
 
-        if check_data_model_compatible_public(self.data, self.cv_model, "shape_fit_", cv=True):
+        if check_data_model_compatible_public(self.data, self.model, "n_features_", cv=False):
             return None
-
         self.print_result()
 
         if self.output_cla_rep_cb.checkState():
@@ -471,7 +504,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    self = SVM_Classifier_Dialog()
+    self = Naive_Bayes_Classifier_Dialog()
     self.show()
     sys.exit(app.exec_())
 

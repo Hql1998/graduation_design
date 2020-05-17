@@ -1,27 +1,31 @@
-from GUI_part.svm_classifier_ui import Ui_SVM_Classifier_Dialog
+from GUI_part.knn_classifier_ui import Ui_KNN_Dialog
 from PyQt5 import QtWidgets
-from PyQt5.Qt import QDialog, QErrorMessage, qErrnoWarning, QButtonGroup
+from PyQt5.Qt import QDialog, QErrorMessage, qErrnoWarning, QButtonGroup, QDoubleValidator, QValidator
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import cycle
-from sklearn.model_selection import RandomizedSearchCV,GridSearchCV
-from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from joblib import dump, load
 from print_to_log import *
-from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public, check_data_model_compatible_public,read_data_multiclass_public,read_data_public
+from public_functions import plot_confusion_matrix_public, print_classification_report_public, save_file_public, check_data_public, check_data_model_compatible_public, read_data_multiclass_public,read_data_public
+
+class My_KNN(KNeighborsClassifier):
+    def fit(self, X, y):
+        self.n_features_ = X.shape[1]
+        return super().fit(X, y)
 
 
 
-class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
+class KNN_Classifier_Dialog(QDialog, Ui_KNN_Dialog):
 
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.setupUi(self)
         self.adjust_sbutile()
-
         self.data = {}
         self.cv_model = None
         self.model = None
@@ -34,17 +38,12 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
         # read_data_public(self.data)
         # read_data_multiclass_public(self.data)
-
         # self.get_y_labels()
         # self.apply_handler()
 
-        self.parentWidget().state_changed_handler("start")
+        # self.parentWidget().state_changed_handler("start")
 
     def adjust_sbutile(self):
-        btn_group = QButtonGroup(self)
-        btn_group.addButton(self.random_search_cb)
-        btn_group.addButton(self.grid_search_cb)
-
         self.setStyleSheet("background:None;")
 
         self.load_model_cb.toggled['bool'].connect(self.load_model_cb_toggled_handler)
@@ -56,36 +55,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         self.apply_btn.clicked.connect(self.apply_handler)
         self.finish_btn.clicked.connect(self.finish_handler)
 
-        self.linear_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.poly_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.rbf_kernel_cb.toggled['bool'].connect(self.compat_kernels)
-        self.sigmoid_kernel_cb.toggled['bool'].connect(self.compat_kernels)
 
-        self.rbf_kernel_cb.setChecked(False)
-        self.rbf_kernel_cb.setChecked(True)
-
-        self.balanced_class_weight_cb.setChecked(True)
-
-    def compat_kernels(self):
-        linear_flag = self.linear_kernel_cb.checkState()
-        poly_flag = self.poly_kernel_cb.checkState()
-        rbf_flag = self.rbf_kernel_cb.checkState()
-        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
-
-        if not poly_flag and not sigmoid_flag:
-            self.coef_group.setEnabled(False)
-        else:
-            self.coef_group.setEnabled(True)
-
-        if not poly_flag and not sigmoid_flag and not rbf_flag:
-            self.gamma_group.setEnabled(False)
-        else:
-            self.gamma_group.setEnabled(True)
-
-        if not poly_flag:
-            self.degree_group.setEnabled(False)
-        else:
-            self.degree_group.setEnabled(True)
 
     def get_y_labels(self):
         if self.data["train_y"] is not None:
@@ -98,8 +68,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             else:
                 self.multiclass = True
                 self.scoring_comb.clear()
-                self.scoring_comb.addItems(["accuracy",  "precision_micro", "recall_micro"])
-                self.scoring_comb.setCurrentIndex(1)
+                self.scoring_comb.addItems(["accuracy", "roc_auc_ovr", "precision_micro", "recall_micro"])
 
     def load_model_cb_toggled_handler(self):
         print("load_model clicked")
@@ -187,7 +156,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             save_file_public(open_result=self.save_file_btn.open_result,
                              data=self.data,
                              have_test=self.have_test,
-                             widget_name=self.parentWidget().class_name,
+                             widget_name="KNN",#self.parentWidget().class_name,
                              run_index=self.run_index)
             self.save_file_later = False
         else:
@@ -195,107 +164,56 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             # QErrorMessage.qtHandler()
             # qErrnoWarning("you don't have a trained model or ou didn't select the checkbox")
 
-    def make_search_para_list(self):
-        linear_flag = self.linear_kernel_cb.checkState()
-        poly_flag = self.poly_kernel_cb.checkState()
-        rbf_flag = self.rbf_kernel_cb.checkState()
-        sigmoid_flag = self.sigmoid_kernel_cb.checkState()
-        if not linear_flag and not poly_flag and not rbf_flag and not sigmoid_flag:
-            QErrorMessage.qtHandler()
-            qErrnoWarning("you didn't choose a kernel")
-            return True
-        if self.c_group.isEnabled():
-            c_start = self.c_start_sp.value()
-            c_end = self.c_end_sp.value()
-            c_num = self.c_num_sp.value()
-            c_list = np.logspace(start=c_start, stop=c_end, num=c_num, base=10)
-        if self.gamma_group.isEnabled():
-            gamma_start = self.gamma_start_sp.value()
-            gamma_end = self.gamma_end_sp.value()
-            gamma_num = self.gamma_num_sp.value()
-            gamma_list = np.logspace(start=gamma_start, stop=gamma_end, num=gamma_num, base=10)
-        if self.degree_group.isEnabled():
-            degree_start = self.degree_start_sp.value()
-            degree_end = self.degree_end_sp.value()
-            degree_num = self.degree_num_sp.value()
-            if degree_num > degree_end - degree_start+1:
-                degree_num = degree_end - degree_start+1
-            if degree_num == 0:
-                degree_list = None
-            else:
-                degree_list = np.linspace(start=degree_start, stop=degree_end, num=degree_num)
-
-        if self.coef_group.isEnabled():
-            coef_start = self.coef_start_sp.value()
-            coef_end = self.coef_end_sp.value()
-            coef_num = self.coef_num_sp.value()
-            coef_list = np.logspace(start=coef_start, stop=coef_end, num=coef_num, base=10)
-        grid_list = []
-        if linear_flag:
-            linear_grid = {'kernel': ['linear'], 'C': c_list}
-            grid_list.append(linear_grid)
-        if poly_flag:
-            if degree_list is None:
-                poly_grid = {'kernel': ['poly'],
-                             'gamma': gamma_list,
-                             'C': c_list}
-            else:
-                poly_grid = {'kernel': ['poly'],
-                             'gamma': gamma_list,
-                             'C': c_list,
-                             "degree":degree_list}
-            grid_list.append(poly_grid)
-        if rbf_flag:
-            rbf_grid = {'kernel': ['rbf'],
-                         'gamma': gamma_list,
-                         'C': c_list}
-            grid_list.append(rbf_grid)
-        if sigmoid_flag:
-            sigmoid_grid={'kernel': ['sigmoid'],
-                         'gamma': gamma_list,
-                         'C': c_list}
-            grid_list.append(sigmoid_grid)
-
-        return grid_list
 
     def train_a_model(self):
 
         train_x = self.data["train_x"]
         train_y = self.data["train_y"]
 
+
         scoring = self.scoring_comb.currentText()
         cv_folds = self.cv_folds_sp.value()
 
-        grid_parameters = self.make_search_para_list()
-        if grid_parameters is True:
+        nerghbor_start = self.neighbor_start_sp.value()
+        nerghbor_end = self.neighbor_end_sp.value()
+        neighbor_num = self.neighbor_num_sp.value()
+        if nerghbor_end < nerghbor_start:
             return True
-        print(grid_parameters)
-        if self.balanced_class_weight_cb.checkState():
-            svc = SVC(class_weight= 'balanced')
+        if neighbor_num > nerghbor_end-nerghbor_start+1:
+            neighbor_num = nerghbor_end-nerghbor_start+1
+        n_neighbors = [int(x) for x in np.linspace(start=nerghbor_start, stop=nerghbor_end, num=neighbor_num)]
+
+        weights_list = []
+        if self.uniform_cb.checkState():
+            weights_list.append("uniform")
+        if self.distance_cb.checkState():
+            weights_list.append("distance")
+
+        if weights_list == []:
+            grid_parameters = {'n_neighbors': n_neighbors}
         else:
-            svc = SVC()
-
+            grid_parameters = {'n_neighbors': n_neighbors,
+                       'weights': weights_list}
+        print(grid_parameters)
+        knn = My_KNN()
         print("computing")
-
-        if self.random_search_cb.checkState():
-            random_cv = RandomizedSearchCV(estimator=svc, param_distributions=grid_parameters, cv=cv_folds, scoring=scoring, random_state=42) # n_iter=100,
-            random_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-            self.cv_model = random_cv
-        elif self.grid_search_cb.checkState():
-            grid_cv = GridSearchCV(estimator=svc, param_grid=grid_parameters, cv=cv_folds, scoring=scoring)
-            grid_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
-            self.cv_model = grid_cv
+        grid_cv = GridSearchCV(estimator=knn, param_grid=grid_parameters, cv=cv_folds, scoring=scoring)
+        grid_cv.fit(train_x.to_numpy(), train_y.to_numpy().reshape(train_y.to_numpy().shape[0], ))
+        self.cv_model = grid_cv
         print("training model finished")
 
         return False
 
     def plot_ROC_just_curve(self, model_name, X, y):
         classifier = self.model
-        color = {'SVM - test': 'darkgreen', 'SVM - train': 'darkblue'}
-        probas = classifier.decision_function(X)
+        color = {'KNN - test': 'darkgreen', 'KNN - train': 'darkblue'}
+        probas = classifier.predict_proba(X)
         print("y_true", y.to_numpy().reshape(y.shape[0],).shape, "y_prob", probas.shape)
-
-        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas)
+        index = 1
+        for i in range(len(self.model.classes_)):
+            if self.model.classes_[i] == 1:
+                index = i
+        fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas[:,index])
         roc_auc = auc(fpr, tpr)
         print_to_tb(self.textBrowser,model_name + r' ROC (AUC: %0.2f)' % (roc_auc))
         plt.plot(fpr, tpr, color=color[model_name], label=model_name + r' ROC (AUC: %0.2f)' % (roc_auc), lw=2, alpha=.9)
@@ -303,12 +221,12 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
     def plot_ROC(self):
 
-        plt.figure(num = "SVM Classifier ROC"+" the "+str(self.run_index)+" run", figsize=(5, 5))
+        plt.figure(num = "KNN Classifier ROC"+" the "+str(self.run_index)+" run", figsize=(5, 5))
 
         plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Random Chance', alpha=.8)
-        self.plot_ROC_just_curve("SVM - train", self.data["train_x"], self.data["train_y"])
+        self.plot_ROC_just_curve("KNN - train", self.data["train_x"], self.data["train_y"])
         if self.have_test:
-            self.plot_ROC_just_curve("SVM - test", self.data["test_x"], self.data["test_y"])
+            self.plot_ROC_just_curve("KNN - test", self.data["test_x"], self.data["test_y"])
 
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
@@ -322,10 +240,10 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         classifier = self.model
         n_classes = len(classifier.classes_)
         if testing:
-            y_score = classifier.decision_function(self.data["test_x"])
+            y_score = classifier.predict_proba(self.data["test_x"])
             y = label_binarize(self.data["test_y"], classes=classifier.classes_)
         else:
-            y_score = classifier.decision_function(self.data["train_x"])
+            y_score = classifier.predict_proba(self.data["train_x"])
             y = label_binarize(self.data["train_y"], classes=classifier.classes_)
         # Compute ROC curve and ROC area for each class
         fpr = dict()
@@ -376,7 +294,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
                        ''.format(roc_auc["macro"]),
                  color='navy', linestyle=':', linewidth=linewidth)
         print_to_tb(self.textBrowser, prefix_tb, 'macro-average AUC is {0:0.2f})'.format(roc_auc["macro"]))
-        colors = colors = cycle(
+        colors = cycle(
             [(0.878, 0.4627, 0.3529), (0.392, 0, 0), (0.2, 0.21, 0.38), (0.4, 0.843, 0.513), (0.274, 0.51, 0.878),
              (0.21, 0.6627, 0.576),(0, 0.3568, 0.61), (0.42, 0.8588, 0.7682), (0.8, 0.43, 0.666),(0.59, 0.2549, 0.1)])
         for i, color in zip(range(n_classes), colors):
@@ -407,8 +325,6 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         for key in cv_model.best_params_.keys():
             print_to_tb(self.textBrowser,key, cv_model.best_params_[key])
 
-        print_to_tb(self.textBrowser, "support vectors at sample index:",str([i for i in best_estimator.support_]))
-
         print_to_tb(self.textBrowser, "best score during CV", cv_model.best_score_)
         if self.multiclass and self.plot_roc_cb.checkState():
             self.plot_ROC_multiclass(False)
@@ -425,11 +341,11 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
 
     def apply_handler(self):
 
-        self.parentWidget().state_changed_handler("processing")
+        # self.parentWidget().state_changed_handler("processing")
 
         no_y_flag, self.have_test = check_data_public(self.data)
         if no_y_flag:
-            self.parentWidget().state_changed_handler("unprepared")
+            # self.parentWidget().state_changed_handler("unprepared")
             return
 
         self.run_index += 1
@@ -439,7 +355,7 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
             if self.train_a_model():
                 return None
 
-        if check_data_model_compatible_public(self.data, self.cv_model, "shape_fit_", cv=True):
+        if check_data_model_compatible_public(self.data, self.cv_model, "n_features_", cv=True):
             return None
 
         self.print_result()
@@ -456,22 +372,22 @@ class SVM_Classifier_Dialog(QDialog, Ui_SVM_Classifier_Dialog):
         if self.save_file_cb.checkState() and self.save_file_later:
             self.save_file()
 
-        self.parentWidget().state_changed_handler("finish")
+        # self.parentWidget().state_changed_handler("finish")
         plt.show()
 
     def finish_handler(self):
 
-        if self.parent().next_widgets != []:
-            for next_widget in self.parent().next_widgets:
-                if next_widget.data is None:
-                    next_widget.update_data_from_previous()
+        # if self.parent().next_widgets != []:
+        #     for next_widget in self.parent().next_widgets:
+        #         if next_widget.data is None:
+        #             next_widget.update_data_from_previous()
         self.hide()
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    self = SVM_Classifier_Dialog()
-    self.show()
+    Dialog = KNN_Classifier_Dialog()
+    Dialog.show()
     sys.exit(app.exec_())
 

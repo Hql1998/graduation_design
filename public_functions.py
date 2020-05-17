@@ -1,6 +1,6 @@
 from sklearn.metrics import roc_curve, auc, classification_report, plot_confusion_matrix
 import matplotlib.pyplot as plt
-from pandas import read_excel
+from pandas import read_excel,read_csv
 from print_to_log import *
 from PyQt5.Qt import QErrorMessage, qErrnoWarning
 
@@ -107,6 +107,7 @@ def check_data_model_compatible_public(data,model,check_string,cv=False):
             QErrorMessage.qtHandler()
             qErrnoWarning("counting feature method didn't fit, coef_, probably you load a wrong model")
             return True
+
     else:
         QErrorMessage.qtHandler()
         qErrnoWarning("the model don't have a counting feature method")
@@ -116,11 +117,14 @@ def check_data_model_compatible_public(data,model,check_string,cv=False):
 
 def read_data_public(data):
     data["train_x"] = read_excel(r"E:\python\graduation_design\temp\cleaned_diabetes_binary_train_data_preprocessing.xlsx", index_col=0).drop(columns="class")
+    # data["train_x"] = read_csv(r"E:\python\graduation_design\temp\balanced_diabetes_dataset.csv").drop(columns="class")
     data["test_x"] = read_excel(r"E:\python\graduation_design\temp\cleaned_diabetes_binary_test_data_preprocessing.xlsx", index_col=0).drop(columns="class")
     data["train_y"] = read_excel(
         r"E:\python\graduation_design\temp\cleaned_diabetes_binary_train_data_preprocessing.xlsx", index_col=0).loc[:,["class"]]
+    # data["train_y"] = read_csv(r"E:\python\graduation_design\temp\balanced_diabetes_dataset.csv").loc[:,["class"]]
     data["test_y"] = read_excel(
         r"E:\python\graduation_design\temp\cleaned_diabetes_binary_test_data_preprocessing.xlsx", index_col=0).loc[:,["class"]]
+    print(data["train_x"].info(verbose=True))
 
 def read_data_multiclass_public(data):
 
@@ -130,6 +134,6 @@ def read_data_multiclass_public(data):
         r"E:\python\graduation_design\temp\cleaned_radio_multiclass_train_data_preprocessing.xlsx", index_col=0).loc[:,["mutation_0forNo_1for19_2forL858R"]]
     data["test_y"] = read_excel(
         r"E:\python\graduation_design\temp\cleaned_radio_multiclass_test_data_preprocessing.xlsx", index_col=0).loc[:,["mutation_0forNo_1for19_2forL858R"]]
-
+    print(data["train_x"].info(verbose=True))
 
 

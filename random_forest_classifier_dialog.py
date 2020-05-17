@@ -8,7 +8,7 @@ from itertools import cycle
 from sklearn.model_selection import RandomizedSearchCV,GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 from joblib import dump, load
 from print_to_log import *
@@ -40,7 +40,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
         self.adjust_sbutile()
         self.data = {}
         self.cv_model = None
-        self.best_estimator = None
+        self.model = None
         self.run_index = 0
         self.have_test = True
         self.multiclass = False
@@ -167,7 +167,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             # qErrnoWarning("you don't have a trained model or ou didn't select the checkbox")
 
     def feature_filter_toggled_handler(self):
-        if self.best_estimator is not None and self.best_estimator.n_features_ == self.data["train_x"].shape[1]:
+        if self.model is not None and self.model.n_features_ == self.data["train_x"].shape[1]:
             self.transform_data()
 
     def train_a_model(self):
@@ -242,13 +242,13 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             return False
 
     def plot_ROC_just_curve(self, model_name, X, y):
-        classifier = self.best_estimator
+        classifier = self.model
         color = {'Random Forest - test': 'darkgreen', 'Random Forest - train': 'darkblue'}
         probas = classifier.predict_proba(X)
         print("y_true", y.to_numpy().reshape(y.shape[0],).shape, "y_prob", probas.shape)
         index = 1
-        for i in range(self.best_estimator.n_classes_):
-            if self.best_estimator.classes_[i] == 1:
+        for i in range(self.model.n_classes_):
+            if self.model.classes_[i] == 1:
                 index = i
         fpr, tpr, thresholds = roc_curve(y.to_numpy().reshape(y.shape[0],), probas[:,index])
         roc_auc = auc(fpr, tpr)
@@ -274,7 +274,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
         plt.show(block=False)
 
     def plot_ROC_multiclass(self, testing=False):
-        classifier = self.best_estimator
+        classifier = self.model
         n_classes = len(classifier.classes_)
         if testing:
             y_score = classifier.predict_proba(self.data["test_x"])
@@ -331,7 +331,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
                        ''.format(roc_auc["macro"]),
                  color='navy', linestyle=':', linewidth=linewidth)
         print_to_tb(self.textBrowser, prefix_tb, 'macro-average AUC is {0:0.2f})'.format(roc_auc["macro"]))
-        colors = colors = cycle(
+        colors = cycle(
             [(0.878, 0.4627, 0.3529), (0.392, 0, 0), (0.2, 0.21, 0.38), (0.4, 0.843, 0.513), (0.274, 0.51, 0.878),
              (0.21, 0.6627, 0.576),(0, 0.3568, 0.61), (0.42, 0.8588, 0.7682), (0.8, 0.43, 0.666),(0.59, 0.2549, 0.1)])
         for i, color in zip(range(n_classes), colors):
@@ -352,8 +352,8 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
     def print_result(self):
 
         cv_model = self.cv_model
-        self.best_estimator = cv_model.best_estimator_
-        best_estimator = self.best_estimator
+        self.model = cv_model.best_estimator_
+        best_estimator = self.model
 
         self.class_name = ["class " + str(i) for i in best_estimator.classes_]
         print(self.class_name)
@@ -378,16 +378,16 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
             self.plot_ROC()
 
     def print_classification_report(self):
-        print_classification_report_public(model=self.best_estimator, data=self.data, class_name=self.class_name, textBrowser=self.textBrowser, have_test=self.have_test)
+        print_classification_report_public(model=self.model, data=self.data, class_name=self.class_name, textBrowser=self.textBrowser, have_test=self.have_test)
 
     def plot_confusion_matrix(self):
-        plot_confusion_matrix_public(model=self.best_estimator, model_name="Random_Forest", data=self.data, class_name=self.class_name, run_index=self.run_index, have_test=self.have_test)
+        plot_confusion_matrix_public(model=self.model, model_name="Random_Forest", data=self.data, class_name=self.class_name, run_index=self.run_index, have_test=self.have_test)
 
     def transform_data(self):
         threshold = float(self.feature_importance_le.text())
-        sfm = SelectFromModel(estimator=self.best_estimator, prefit=True, threshold=threshold)
+        sfm = SelectFromModel(estimator=self.model, prefit=True, threshold=threshold)
         self.data["train_x"] = pd.DataFrame(sfm.transform(self.data["train_x"]), index=self.data["train_x"].index, columns=self.data["train_x"].columns[sfm.get_support()])
-        print_to_tb(self.textBrowser, "number of finially selected features：", len(sfm.get_support()[sfm.get_support() == True]), "/", self.best_estimator.n_features_)
+        print_to_tb(self.textBrowser, "number of finially selected features：", len(sfm.get_support()[sfm.get_support() == True]), "/", self.model.n_features_)
         print_log_header(self.parentWidget().class_name)
         print_to_log("train_x" + str(self.data["train_x"].shape))
         print_to_log("train_y" + str(self.data["train_y"].shape))

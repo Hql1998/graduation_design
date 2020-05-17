@@ -23,7 +23,9 @@ class Window(QMainWindow, Ui_MainWindow):
                                     "data_preprocessing": [],
                                     "lasso_logistic_regression": [],
                                     "random_forest_classifier": [],
-                                    "svm_classifier": []
+                                    "svm_classifier": [],
+                                    "naive_bayes_classifier": [],
+                                    "knn_classifier": []
                                     }
 
     def setup_ui_subtle(self):
@@ -73,6 +75,19 @@ class Window(QMainWindow, Ui_MainWindow):
         svmcfw.icon_btn.setText("SVMCV")
         svmcfw.show()
         self.function_widget_dict[svmcfw.class_name].append(svmcfw)
+
+    def naive_bayes_classifier_btn_clicked_handler(self):
+        nbcfw = Naive_Bayes_Classifier_Function_Widget(self.draw_scroll_area_content)
+        nbcfw.icon_btn.setText("NB")
+        nbcfw.show()
+        self.function_widget_dict[nbcfw.class_name].append(nbcfw)
+
+    def knn_classifier_btn_clicked_handler(self):
+        knncfw = KNN_Classifier_Function_Widget(self.draw_scroll_area_content)
+        knncfw.icon_btn.setText("KNNCV")
+        knncfw.show()
+        self.function_widget_dict[knncfw.class_name].append(knncfw)
+
 
 
     def status_initiate(self):

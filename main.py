@@ -1,11 +1,11 @@
 from main_window import *
+from global_imports import *
 
 
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    window = Window()
-    # window.state.selected_widgets
+import sys
+app = QApplication(sys.argv)
+window = Window()
+# window.state.selected_widgets
 
-    window.show()
-    sys.exit(app.exec_())
+window.show()
+sys.exit(app.exec_())
