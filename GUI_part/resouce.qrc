@@ -3,6 +3,8 @@
     <file>draw_back_grid.png</file>
   </qresource>
   <qresource prefix="main_window">
+    <file>circle_dark.png</file>
+    <file>circle_red.png</file>
     <file>right_arrow.png</file>
     <file>add_new.png</file>
     <file>start.png</file>

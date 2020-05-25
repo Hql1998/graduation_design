@@ -10,9 +10,9 @@ class Lasso_Logistic_Regression_Function_Widget(Function_Widget):
         self.class_name = "lasso_logistic_regression"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = ["random_forest_classifier", "svm_classifier","naive_bayes_classifier","knn_classifier"]
-        self.allowed_previouse_num = 2
-        self.allowed_next_num = 1
+        self.allowed_next_fun_widget_list = ["random_forest_classifier", "svm_classifier", "naive_bayes_classifier","knn_classifier"]
+        self.allowed_previouse_num = 1
+        self.allowed_next_num = 10
         self.data = None
         print("lasso_logistic_regression object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)

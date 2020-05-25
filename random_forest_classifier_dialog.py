@@ -206,6 +206,7 @@ class Random_Forest_Classifier_Dialog(QDialog, Ui_Dialog):
 
             max_features = np.array([int(x) for x in np.linspace(start=feature_prop_start, stop=feature_prop_end, num=feature_prop_num)])
             max_features = max_features[max_features > 0]
+            # max_features = np.append(max_features, "auto")
 
 
             max_depth = [int(x) for x in np.linspace(start=max_depth_start, stop=max_depth_end, num=max_depth_num)]

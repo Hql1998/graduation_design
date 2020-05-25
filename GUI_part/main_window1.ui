@@ -63,7 +63,7 @@
              <x>0</x>
              <y>0</y>
              <width>880</width>
-             <height>743</height>
+             <height>720</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -93,7 +93,7 @@
              <x>0</x>
              <y>0</y>
              <width>880</width>
-             <height>743</height>
+             <height>720</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -121,6 +121,29 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1208</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>files</string>
+    </property>
+    <addaction name="actionopen_file"/>
+   </widget>
+   <widget class="QMenu" name="menuedit">
+    <property name="title">
+     <string>edit</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menuedit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -191,7 +214,7 @@ p, li { white-space: pre-wrap; }
           <x>0</x>
           <y>0</y>
           <width>280</width>
-          <height>732</height>
+          <height>709</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -265,7 +288,7 @@ p, li { white-space: pre-wrap; }
           <x>0</x>
           <y>0</y>
           <width>280</width>
-          <height>732</height>
+          <height>709</height>
          </rect>
         </property>
         <attribute name="label">

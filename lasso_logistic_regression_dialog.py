@@ -342,10 +342,10 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         ax1.plot(log_Cs, lower, 'b--')
         ax1.fill_between(log_Cs, higher, lower, alpha=0.2)
 
-        ax1.axvline(-np.log10(best_c), linestyle='--', color='k', label='alpha: CV estimate {0}'.format(round(best_c, 4)))
+        ax1.axvline(np.log10(best_c), linestyle='--', color='k', label='Best C: {0}'.format(round(best_c, 4)))
         ax1.set(xlim=[min(log_Cs), max(log_Cs)])
         print('best C from CV {0}'.format(round(best_c, 4)))
-        ax1.legend(prop={'size': 8}, loc="upper right")
+        ax1.legend(prop={'size': 8}, loc="upper left")
         ax1.set_xlabel(xlabel='Log10(C)', fontsize=7)
         ax1.set_ylabel(ylabel=self.scoring_comb.currentText(), fontsize=7)
         ax1.set_title(label='Performance along the regularization path', loc="left")
@@ -368,12 +368,12 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
             l1 = ax2.plot(log_Cs, coef_l, c=c, linewidth=linewidth * 0.85)
         print("log10 alpha mean", np.log10(best_c))
 
-        ax2.axvline(-np.log10(best_c), linestyle='--', color='k', label='best C: {0}'.format(round(best_c, 4)))
+        ax2.axvline(np.log10(best_c), linestyle='--', color='k', label='Best C: {0}'.format(round(best_c, 4)))
         ax2.set(xlim=[min(log_Cs), max(log_Cs)])
         ax2.set_xlabel(xlabel='Log10(C)', fontsize=7)
         ax2.set_ylabel(ylabel='Coefficients', fontsize=7)
         ax2.set_title(label="Coefficients and Intercept Path", loc="left")
-        ax1.legend(prop={'size': 8}, loc="upper right")
+        ax2.legend(prop={'size': 8}, loc="upper left")
         plt.tight_layout(pad=1, w_pad=1, h_pad=1)
         plt.show(block=False)
         return None
@@ -402,10 +402,10 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
         axs[0, 0].plot(log_Cs, lower, 'b--')
         axs[0, 0].fill_between(log_Cs, higher, lower, alpha=0.2)
         if model.C_[0] == model.C_[1] == model.C_[2]:
-            axs[0, 0].axvline(-np.log10(model.C_[0]), linestyle='--', color='k',
-                          label='alpha: CV estimate {0}'.format(round(model.C_[0], 4)))
+            axs[0, 0].axvline(np.log10(model.C_[0]), linestyle='--', color='k',
+                          label='Best C: {0}'.format(round(model.C_[0], 4)))
         axs[0, 0].set(xlim=[min(log_Cs), max(log_Cs)])
-        axs[0, 0].legend(prop={'size': 8}, loc="upper right")
+        axs[0, 0].legend(prop={'size': 8}, loc="upper left")
         axs[0, 0].set_xlabel(xlabel='Log10(C)', fontsize=7)
         axs[0, 0].set_ylabel(ylabel=self.scoring_comb.currentText(), fontsize=7)
         axs[0, 0].set_title(label='Performance along the regularization path', loc="left")
@@ -428,13 +428,13 @@ class Lasso_Logistic_Regression_Dialog(QDialog, Ui_Dialog):
                 l1 = axs[0, i].plot(log_Cs, coef_l, c=c, linewidth=linewidth * 0.85)
             print("log10 alpha mean", np.log10(best_c))
 
-            axs[0, i].axvline(-np.log10(best_c), linestyle='--', color='k',
-                              label='best C: {0}'.format(round(best_c, 4)))
+            axs[0, i].axvline(np.log10(best_c), linestyle='--', color='k',
+                              label='Best C: {0}'.format(round(best_c, 4)))
             axs[0, i].set(xlim=[min(log_Cs), max(log_Cs)])
             axs[0, i].set_xlabel(xlabel='Log10(C)', fontsize=7)
             axs[0, i].set_ylabel(ylabel='Coefficients', fontsize=7)
             axs[0, i].set_title(label='class '+ str(i-1) + " coefficients path", loc="left")
-            axs[0, i].legend(prop={'size': 8}, loc="upper right")
+            axs[0, i].legend(prop={'size': 8}, loc="upper left")
             plt.tight_layout(pad=1, w_pad=1, h_pad=1)
             plt.show(block=False)
         return None

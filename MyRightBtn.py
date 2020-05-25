@@ -8,7 +8,6 @@ class MyRightBtn(QPushButton):
         super().__init__(parent, *args, **kwargs)
         # self.setCheckable(True)
         self.setObjectName("right_emiter_btn")
-        self.receiver_btn = None
         self.curves = []
 
 

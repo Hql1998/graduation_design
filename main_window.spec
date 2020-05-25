@@ -2,10 +2,6 @@
 
 block_cipher = None
 
-added_files = [
-         ( './temp', 'temp' ),
-         ( './GUI_part/image_dir', 'image_dir' )
-         ]
 
 a = Analysis(['main_window.py'],
              pathex=['E:\\python\\graduation_design'],

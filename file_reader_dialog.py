@@ -191,7 +191,8 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
                 self.dataFrame_test = test_set
             elif split_method == "Stratified Shuffle Split":
                 SSsplit = StratifiedShuffleSplit(n_splits=1, test_size=test_ratio, random_state=42)
-                for train_index, test_index in SSsplit.split(self.dataFrame_train, self.dataFrame_train.iloc[:, -1]):
+                target_index = self.target_index_comb.currentIndex()
+                for train_index, test_index in SSsplit.split(self.dataFrame_train, self.dataFrame_train.iloc[:, target_index]):
                     strat_train_set = self.dataFrame_train.loc[train_index]
                     strat_test_set = self.dataFrame_train.loc[test_index]
                 self.dataFrame_train = strat_train_set
@@ -202,8 +203,14 @@ class File_Reader_Dialog(QDialog,Ui_file_reader_dialog):
             if self.dataFrame_test_loaded is None:
                 QErrorMessage.qtHandler()
                 qErrnoWarning("please select a test file")
+                return None
             else:
-                self.dataFrame_test = self.dataFrame_test_loaded
+                if self.dataFrame_test_loaded.shape[1] != self.dataFrame_train.shape[1]:
+                    QErrorMessage.qtHandler()
+                    qErrnoWarning("please select a validate test file")
+                    return None
+                else:
+                    self.dataFrame_test = self.dataFrame_test_loaded
         if self.without_test_cb.checkState():
             self.dataFrame_test = None
 

@@ -77,10 +77,9 @@ class Function_Widget(Dragable_Widget):
         self.icon_btn.setObjectName("icon_btn")
         self.icon_btn.setText("icon")
 
-
         self.light_label = Light_Label(parent=self)
-        self.mid_vertical_layout = QVBoxLayout(self)
-        self.light_h_layout = QHBoxLayout(self)
+        self.mid_vertical_layout = QVBoxLayout()
+        self.light_h_layout = QHBoxLayout()
         self.light_h_layout.addWidget(self.light_label)
 
         self.mid_vertical_layout.addStretch(1)
@@ -192,3 +191,11 @@ class Function_Widget(Dragable_Widget):
 
     def get_left_sucket(self):
         return self.mapToGlobal(QPoint(0,0))+QPoint(0*self.width(), 1/2*self.height() - 10)
+
+
+if __name__ == "__main__":
+    import sys
+    app = QApplication(sys.argv)
+    window = Function_Widget()
+    window.show()
+    sys.exit(app.exec_())

@@ -15,17 +15,16 @@ class Curve(QWidget):
 
     def setup_ui(self):
         self.resize(20, 20)
-        # self.setMinimumSize(20, 20)
+        self.setMinimumSize(20, 20)
         self.setStyleSheet("""
         Curve{
-        border: 1px solid rgba(255,255,0,255);
         background:None;
         }
-        Curve:hover{
-        border: 1px solid black;
-        }
         """)
-
+        # border: 1px solid rgba(255,255,0,255);
+        # Curve:hover{
+        # border: 1px solid black;
+        # }
         self.start_label = Start_Label(self)
         self.end_label = End_Label(self)
         self.end_label.move(self.width()-20, self.height()-20)

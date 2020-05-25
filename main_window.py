@@ -14,7 +14,6 @@ class Window(QMainWindow, Ui_MainWindow):
         # load UI resources
         self.setupUi(self)
         self.status_bar = self.statusBar()
-        self.tool_bar = QToolBar(self)
         self.setup_ui_subtle()
 
         # widget management
@@ -30,15 +29,16 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def setup_ui_subtle(self):
 
-        self.tool_bar.setMaximumHeight(20)
-        self.tool_bar.setFloatable(False)
-
-        start_action = QAction(QIcon(QPixmap(":/main_window/start.png").scaled(20,20)), "start", self)
-        self.tool_bar.addAction(start_action)
-        stop_action = QAction(QIcon(QPixmap(":/main_window/stop.png").scaled(20, 20)), "stop", self)
-        self.tool_bar.addAction(stop_action)
-
-        self.addToolBar(self.tool_bar)
+        # self.tool_bar = QToolBar(self)
+        # self.tool_bar.setMaximumHeight(20)
+        # self.tool_bar.setFloatable(False)
+        #
+        # start_action = QAction(QIcon(QPixmap(":/main_window/start.png").scaled(20,20)), "start", self)
+        # self.tool_bar.addAction(start_action)
+        # stop_action = QAction(QIcon(QPixmap(":/main_window/stop.png").scaled(20, 20)), "stop", self)
+        # self.tool_bar.addAction(stop_action)
+        #
+        # self.addToolBar(self.tool_bar)
 
         self.status_bar.showMessage("success to load on the mainwindow", 5000)
 

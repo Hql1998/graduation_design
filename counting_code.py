@@ -25,6 +25,6 @@ def listdir(dir, lines):
 lines = []
 dir = 'E:\python\graduation_design'
 listdir(dir, lines)
-# dir = 'E:\python\graduation_design\GUI_part'
-# listdir(dir, lines)
+dir = 'E:\python\graduation_design\GUI_part'
+listdir(dir, lines)
 print('total lines=' + str(sum(lines)))

@@ -36,7 +36,7 @@ class Ui_MainWindow(object):
         self.draw_scroll_area.setWidgetResizable(True)
         self.draw_scroll_area.setObjectName("draw_scroll_area")
         self.draw_scroll_area_content = Draw_Scroll_Area_Content()
-        self.draw_scroll_area_content.setGeometry(QtCore.QRect(0, 0, 880, 720))
+        self.draw_scroll_area_content.setGeometry(QtCore.QRect(0, 0, 880, 743))
         self.draw_scroll_area_content.setStyleSheet("background-image: url(:/draw_tab/draw_back_grid.png);")
         self.draw_scroll_area_content.setObjectName("draw_scroll_area_content")
         self.draw_scroll_area.setWidget(self.draw_scroll_area_content)
@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.log_scroll_tab.setWidgetResizable(True)
         self.log_scroll_tab.setObjectName("log_scroll_tab")
         self.log_scroll_area_content = QtWidgets.QWidget()
-        self.log_scroll_area_content.setGeometry(QtCore.QRect(0, 0, 880, 720))
+        self.log_scroll_area_content.setGeometry(QtCore.QRect(0, 0, 89, 89))
         self.log_scroll_area_content.setObjectName("log_scroll_area_content")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.log_scroll_area_content)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -64,14 +64,6 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.log_tab, "")
         self.horizontalLayout.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1208, 23))
-        self.menubar.setObjectName("menubar")
-        self.menu = QtWidgets.QMenu(self.menubar)
-        self.menu.setObjectName("menu")
-        self.menuedit = QtWidgets.QMenu(self.menubar)
-        self.menuedit.setObjectName("menuedit")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -94,7 +86,7 @@ class Ui_MainWindow(object):
         self.toolBox.setStyleSheet("background-color: rgba(159, 211, 167, 20);")
         self.toolBox.setObjectName("toolBox")
         self.page = QtWidgets.QWidget()
-        self.page.setGeometry(QtCore.QRect(0, 0, 280, 709))
+        self.page.setGeometry(QtCore.QRect(0, 0, 280, 732))
         self.page.setStyleSheet("")
         self.page.setObjectName("page")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.page)
@@ -125,7 +117,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.pushButton_8)
         self.toolBox.addItem(self.page, "")
         self.page_2 = QtWidgets.QWidget()
-        self.page_2.setGeometry(QtCore.QRect(0, 0, 280, 709))
+        self.page_2.setGeometry(QtCore.QRect(0, 0, 100, 30))
         self.page_2.setObjectName("page_2")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.page_2)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -138,9 +130,6 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/main_window/add_new.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionopen_file.setIcon(icon)
         self.actionopen_file.setObjectName("actionopen_file")
-        self.menu.addAction(self.actionopen_file)
-        self.menubar.addAction(self.menu.menuAction())
-        self.menubar.addAction(self.menuedit.menuAction())
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -166,8 +155,6 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:16pt; font-weight:600;\">Log Record:</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:16pt; font-weight:600;\"><br /></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.log_tab), _translate("MainWindow", "Logs"))
-        self.menu.setTitle(_translate("MainWindow", "files"))
-        self.menuedit.setTitle(_translate("MainWindow", "edit"))
         self.dockWidget.setWindowTitle(_translate("MainWindow", "Function Gadget"))
         self.pushButton_4.setText(_translate("MainWindow", "File Reader"))
         self.pushButton_3.setText(_translate("MainWindow", "Deal with Empty Value"))
@@ -181,7 +168,6 @@ class Ui_MainWindow(object):
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("MainWindow", "Standard Library"))
         self.actionopen_file.setText(_translate("MainWindow", "open file"))
 from draw_scroll_area_content import Draw_Scroll_Area_Content
-
 
 if __name__ == "__main__":
     import sys

@@ -10,8 +10,10 @@ class Deal_With_Empty_Value_Function_Widget(Function_Widget):
         self.class_name = "deal_empty"
         self.connected_dialog = None
         self.first_click = True
-        self.allowed_next_fun_widget_list = ["data_preprocessing", "random_forest_classifier", "svm_classifier", "naive_bayes_classifier", "knn_classifier"]
+        self.allowed_next_fun_widget_list = ["data_preprocessing", "lasso_logistic_regression", "svm_classifier", "random_forest_classifier", "naive_bayes_classifier", "knn_classifier"]
         self.data = None
+        self.allowed_previouse_num = 1
+        self.allowed_next_num = 10
         print("deal with empty object name", self.objectName())
         self.icon_btn.double_clicked.connect(self.icon_btn_double_clicked_handler)
 

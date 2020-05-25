@@ -9,8 +9,8 @@ class Start_Label(QLabel):
 
     def setup_ui(self):
         self.resize(20, 20)
-        self.setPixmap(QPixmap(":/main_window/right_arrow.png").scaled(20, 20))
-        self.setStyleSheet("background:red;")
+        self.setPixmap(QPixmap(":/main_window/circle_red.png").scaled(20, 20))
+        self.setStyleSheet("background:None;")
 
 class End_Label(QLabel):
 
@@ -24,8 +24,8 @@ class End_Label(QLabel):
 
     def setup_ui(self):
         self.resize(20, 20)
-        self.setPixmap(QPixmap(":/main_window/right_arrow.png").scaled(20, 20))
-        self.setStyleSheet("background:green;")
+        self.setPixmap(QPixmap(":/main_window/circle_dark.png").scaled(20, 20))
+        self.setStyleSheet("background:None;")
 
     def mousePressEvent(self, me):
         # self.mouse_start = self.parentWidget().start_label.mapToGlobal(QPoint(0,0))
